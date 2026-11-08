@@ -20,9 +20,7 @@
 </div>
 
 <p align="center">
-  <img src="public/cupidcreativex-showcase.gif" alt="Animated CupidCreativeX digital transformation banner featuring web and app development, generative AI, UI/UX, analytics, graphic design, consultation, and digital marketing" width="900">
-  <br>
-  <sub><a href="public/cupidcreativex-digital-transformation.jpg">View the original banner without animation</a></sub>
+  <img src="public/cupidcreativex-digital-transformation.jpg" alt="CupidCreativeX digital transformation banner featuring web and app development, generative AI, UI/UX, analytics, graphic design, consultation, and digital marketing" width="1200">
 </p>
 
 <p align="center">
@@ -314,7 +312,7 @@ This repository is licensed under the [MIT License](LICENSE), including its sour
 
 - `.env` and `.env.local` are intentionally ignored by Git. Keep credentials out of commits, screenshots, and issue reports.
 - The repository badges above update from GitHub metadata. The route, workspace, table, and migration totals are a source snapshot and should be updated if the project structure changes.
-- The animated banner is a gentle loop made from the supplied image; use the original-banner link above for a still version.
+- The banner is displayed as a high-resolution still image for clear, distraction-free viewing.
 - No production URL or sample client/project results are claimed here.
 
 <p align="center">
