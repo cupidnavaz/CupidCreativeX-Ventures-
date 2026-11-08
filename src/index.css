@@ -1,0 +1,715 @@
+@import url('https://fonts.googleapis.com/css2?family=Alice&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@property --marquee-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --hero-border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@layer base {
+  :root {
+    --color-primary: #0a0a0f;
+    --color-accent: #f97316;
+    --color-accent-2: #06b6d4;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0a0a0f;
+    color: #e5e7eb;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+  }
+
+  .public-site,
+  .public-site * {
+    font-family: 'Alice', Georgia, serif !important;
+  }
+
+  .public-site main h1,
+  .public-site main h2,
+  .public-site main h3,
+  .public-site main h4,
+  .public-site main h5,
+  .public-site main h6 {
+    text-wrap: balance;
+  }
+
+  .public-site main .public-heading-in-view {
+    animation: publicHeadingReveal 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  ::selection {
+    background-color: rgba(249, 115, 22, 0.3);
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #f97316 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .glow-orange {
+    box-shadow: 0 0 80px -20px rgba(249, 115, 22, 0.5);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 80px -20px rgba(6, 182, 212, 0.5);
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .brand-logo-mark {
+    filter:
+      drop-shadow(0 0 5px rgba(249, 115, 22, 0.42))
+      drop-shadow(0 0 12px rgba(6, 182, 212, 0.24));
+    transition: filter 220ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .brand-name-glow {
+    text-shadow:
+      0 0 12px rgba(249, 115, 22, 0.28),
+      0 0 22px rgba(6, 182, 212, 0.16);
+    transition: text-shadow 220ms ease;
+  }
+  .brand-lockup:hover .brand-logo-mark {
+    filter:
+      drop-shadow(0 0 7px rgba(249, 115, 22, 0.62))
+      drop-shadow(0 0 17px rgba(6, 182, 212, 0.38));
+    transform: scale(1.035);
+  }
+  .brand-lockup:hover .brand-name-glow {
+    text-shadow:
+      0 0 14px rgba(249, 115, 22, 0.42),
+      0 0 26px rgba(6, 182, 212, 0.28);
+  }
+
+  .hero-image-shell {
+    isolation: isolate;
+  }
+  .hero-image-shell::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -8px;
+    border-radius: 2rem;
+    background: conic-gradient(
+      from var(--hero-border-angle),
+      rgba(249, 115, 22, 0.85),
+      rgba(250, 204, 21, 0.7),
+      rgba(34, 197, 94, 0.68),
+      rgba(6, 182, 212, 0.82),
+      rgba(139, 92, 246, 0.8),
+      rgba(236, 72, 153, 0.7),
+      rgba(249, 115, 22, 0.85)
+    );
+    filter: blur(14px);
+    opacity: 0.5;
+    animation: heroBorderRotate 8s linear infinite;
+    transition: filter 260ms ease, opacity 260ms ease;
+  }
+  .hero-image-shell::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -2px;
+    border-radius: 1.85rem;
+    background: conic-gradient(
+      from var(--hero-border-angle),
+      #f97316,
+      #facc15,
+      #22c55e,
+      #06b6d4,
+      #8b5cf6,
+      #ec4899,
+      #f97316
+    );
+    animation: heroBorderRotate 8s linear infinite;
+  }
+
+  @keyframes heroBorderRotate {
+    to { --hero-border-angle: 360deg; }
+  }
+
+  @keyframes publicHeadingReveal {
+    from { opacity: 0.72; transform: translateY(9px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-image-frame,
+  .hero-image-shell > img {
+    box-shadow:
+      0 18px 48px -30px rgba(249, 115, 22, 0.45),
+      0 22px 52px -36px rgba(6, 182, 212, 0.48);
+  }
+
+  .hero-carousel-image {
+    animation: heroCarouselParallax 6s linear both;
+    animation-play-state: paused;
+    transform: scale(1.04);
+  }
+
+  .hero-carousel-image.is-playing {
+    animation-play-state: running;
+    will-change: transform;
+  }
+
+  .counter-value-enter {
+    animation: counterValueEnter 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .counter-icon-enter {
+    animation: counterIconEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes heroCarouselParallax {
+    from { transform: scale(1.04) translate3d(-1.25%, 0, 0); }
+    to { transform: scale(1.14) translate3d(1.25%, -0.75%, 0); }
+  }
+
+  @keyframes counterValueEnter {
+    from { opacity: 0.65; transform: translateY(5px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes counterIconEnter {
+    from { opacity: 0.6; transform: scale(0.88) rotate(-8deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .glass-hover {
+    transition:
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      box-shadow 240ms ease;
+  }
+  .glass-hover:hover,
+  .card-tilt:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 0 0 1px rgba(249, 115, 22, 0.16),
+      0 12px 28px -18px rgba(249, 115, 22, 0.7),
+      10px 14px 30px -22px rgba(6, 182, 212, 0.75),
+      -10px 14px 30px -22px rgba(139, 92, 246, 0.65);
+  }
+
+  .public-nav-link {
+    position: relative;
+    isolation: isolate;
+    transition:
+      color 180ms ease,
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 180ms ease;
+  }
+  .public-nav-link::after {
+    content: "";
+    position: absolute;
+    right: 0.85rem;
+    bottom: 0.35rem;
+    left: 0.85rem;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), #8b5cf6);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .public-nav-link:hover::after,
+  .public-nav-link:focus-visible::after,
+  .public-nav-link.is-active::after {
+    transform: scaleX(1);
+  }
+  .public-nav-link.is-active {
+    color: var(--color-accent);
+  }
+
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled) {
+    transition:
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 180ms ease,
+      filter 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  svg {
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-hover,
+  .card-tilt,
+  a.group.glass {
+    transition:
+      transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      box-shadow 240ms ease;
+  }
+
+  .marquee-track {
+    border-block: 1px solid transparent;
+  }
+  .marquee-track::before,
+  .marquee-track::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding-block: 1px;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--marquee-angle),
+      transparent 0deg,
+      #f97316 55deg,
+      #facc15 105deg,
+      #22c55e 155deg,
+      #06b6d4 205deg,
+      #8b5cf6 255deg,
+      #ec4899 305deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotateMarqueeBorder 9s linear infinite;
+  }
+  .marquee-track::before {
+    opacity: 0.9;
+  }
+  .marquee-track::after {
+    filter: blur(7px);
+    opacity: 0.48;
+    animation-duration: 12s;
+    animation-direction: reverse;
+  }
+  .marquee-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease forwards;
+  }
+
+  .public-page-enter {
+    animation: publicPageEnter 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 4s ease-in-out infinite;
+  }
+
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+  .marquee-track:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+
+  .animate-float-slow {
+    animation: floatSlow 8s ease-in-out infinite;
+  }
+
+  .card-tilt {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+  }
+  .card-tilt:hover {
+    transform: translateY(-8px);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-image-shell:hover::before {
+    filter: blur(20px);
+    opacity: 0.68;
+  }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-22px) rotate(3deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes publicPageEnter {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 160ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .public-page-enter,
+  .animate-fade-up,
+  .animate-fade-in {
+    animation-name: publicPageFade !important;
+  }
+
+  .animate-marquee,
+  .animate-float,
+  .animate-float-slow,
+  .animate-pulse-slow,
+  .animate-gradient-x,
+  .animate-shimmer {
+    animation: none !important;
+  }
+
+  .hero-carousel-image,
+  .hero-image-shell::before,
+  .hero-image-shell::after,
+  .counter-value-enter,
+  .counter-icon-enter {
+    animation: none !important;
+  }
+
+  .public-site main .public-heading-in-view {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .hero-carousel-image {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .marquee-track::before,
+  .marquee-track::after {
+    animation: none !important;
+    filter: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .card-tilt:hover {
+    transform: none;
+  }
+
+  .brand-lockup:hover .brand-logo-mark {
+    transform: none;
+  }
+}
+
+@keyframes publicPageFade {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes rotateMarqueeBorder {
+  to { --marquee-angle: 360deg; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover,
+  [role="button"]:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: 0 8px 20px -12px rgba(249, 115, 22, 0.75);
+  }
+
+  button:not(:disabled):hover svg,
+  a:hover svg,
+  [role="button"]:hover svg {
+    transform: translateX(2px) scale(1.06);
+  }
+
+  .glass-hover:hover,
+  a.group.glass:hover {
+    transform: translateY(-4px);
+  }
+
+  .public-nav-link:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.035);
+  }
+}
+
+.dashboard-enter {
+  animation: dashboardEnter 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-panel {
+  animation: dashboardEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-row {
+  animation: dashboardRowEnter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dashboard-chart-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dashboardChartDraw 900ms cubic-bezier(0.16, 1, 0.3, 1) 160ms forwards;
+}
+
+.dashboard-chart-point {
+  animation: dashboardPointEnter 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dashboardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dashboardRowEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dashboardChartDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes dashboardPointEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+button:not(:disabled):active,
+[role="button"]:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .public-page-enter .px-8 {
+    padding-inline: 1.25rem;
+  }
+
+  .public-page-enter .p-12 {
+    padding: 1.5rem;
+  }
+
+  .public-page-enter .p-8 {
+    padding: 1.25rem;
+  }
+
+  .public-page-enter .gap-12 {
+    gap: 2rem;
+  }
+
+  .public-page-enter h1 {
+    font-size: clamp(2.25rem, 11vw, 3.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  .public-page-enter img {
+    max-width: 100%;
+  }
+
+  .public-page-enter input,
+  .public-page-enter select,
+  .public-page-enter textarea {
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .marquee-track {
+    padding-block: 1rem;
+  }
+
+  .marquee-track .animate-marquee {
+    gap: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):hover,
+  button:not(:disabled):active,
+  [role="button"]:hover,
+  [role="button"]:active,
+  .glass-hover:hover,
+  .card-tilt:hover,
+  a.group.glass:hover {
+    transform: none;
+    filter: none;
+  }
+
+  .glass-hover:hover {
+    box-shadow: none;
+  }
+
+  .public-nav-link:hover {
+    transform: none;
+  }
+
+  .dashboard-enter,
+  .dashboard-panel,
+  .dashboard-row,
+  .dashboard-chart-line,
+  .dashboard-chart-point {
+    animation: none !important;
+  }
+
+  .dashboard-chart-line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  button:hover svg,
+  a:hover svg,
+  [role="button"]:hover svg {
+    transform: none;
+  }
+}

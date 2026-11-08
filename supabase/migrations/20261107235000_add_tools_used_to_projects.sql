@@ -1,0 +1,2 @@
+ALTER TABLE projects
+ADD COLUMN IF NOT EXISTS tools_used text[] NOT NULL DEFAULT '{}';
