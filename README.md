@@ -41,7 +41,7 @@
     <td align="center"><strong>08</strong><br>public route patterns</td>
     <td align="center"><strong>13</strong><br>admin workspaces</td>
     <td align="center"><strong>12</strong><br>Supabase content tables</td>
-    <td align="center"><strong>07</strong><br>database migrations</td>
+    <td align="center"><strong>09</strong><br>database migrations</td>
   </tr>
 </table>
 
@@ -95,7 +95,7 @@ The `/admin` area is protected by Supabase authentication. Its 13 navigation sec
 | Blog posts | `/admin/blog` | Create and edit articles, excerpts, authors, cover images, and publishing state. |
 | Messages | `/admin/messages` | Review contact form submissions and read status. |
 | Media gallery | `/admin/media` | Upload and organize media stored in Supabase Storage. |
-| Pages | `/admin/pages` | Edit page-specific hero content, section images, and body content. |
+| Pages | `/admin/pages` | Edit page-specific hero content, manually size hero images in pixels, and manage section images and body content. |
 | Integrations | `/admin/integrations` | Configure provider, endpoint, webhook, and integration settings. |
 | Plugins | `/admin/plugins` | Manage plugin descriptions, versions, configuration, and enabled state. |
 | Social links | `/admin/social` | Maintain the public site's social profiles and display order. |
@@ -107,6 +107,8 @@ The `/admin` area is protected by Supabase authentication. Its 13 navigation sec
 - **Contact workflow:** the public contact form creates messages that can be reviewed and marked as read in the admin area.
 - **Brand theming:** site settings drive the public and admin theme, including the primary/accent/background colors, logo, and heading/body fonts.
 - **Media storage:** media records and a Supabase Storage bucket support uploaded site imagery.
+- **Page-specific hero image controls:** set width and height, choose cover/contain/fill, and configure no overlay, a gradient, or a solid color with adjustable strength.
+- **About-image parallax:** the About imagery moves subtly with scrolling and disables the effect for visitors who prefer reduced motion.
 - **Responsive navigation:** the public layout and admin sidebar adapt for smaller screens.
 - **Database policies:** migrations define row-level security and access policies. Review the policies against your own roles and deployment requirements before production use.
 

@@ -11,7 +11,7 @@ export async function loadAllPageContents(): Promise<PageContentMap> {
   loadingPromise = (async () => {
     const { data } = await supabase
       .from('page_contents')
-      .select('id,page_key,hero_image_url,hero_title,hero_subtitle,body_content,section_services_image,section_about_image,section_contact_image,section_hero_image,created_at,updated_at');
+      .select('id,page_key,hero_image_url,hero_image_width,hero_image_height,hero_image_fit,hero_image_overlay,hero_image_overlay_color,hero_image_overlay_opacity,hero_title,hero_subtitle,body_content,section_services_image,section_about_image,section_contact_image,section_hero_image,created_at,updated_at');
     const map: PageContentMap = {};
     (data || []).forEach((pc) => { map[pc.page_key] = pc as PageContent; });
     cache = map;

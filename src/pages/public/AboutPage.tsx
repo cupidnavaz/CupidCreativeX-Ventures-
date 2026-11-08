@@ -3,6 +3,7 @@ import { supabase, type SiteSettings } from '@/lib/supabase';
 import { useTheme } from '@/lib/theme';
 import { usePageContent } from '@/lib/pageContent';
 import { PageHero } from '@/components/PageHero';
+import { ParallaxImage } from '@/components/public/ParallaxImage';
 import { Award, Users, Sparkles, Clock, Target, Eye, Heart } from 'lucide-react';
 
 export default function AboutPage() {
@@ -40,8 +41,8 @@ export default function AboutPage() {
 
       <div className="w-full px-8 md:px-12 lg:px-20 pb-20">
         {sectionImage && (
-          <div className="rounded-2xl overflow-hidden h-64 md:h-80 mb-12">
-            <img src={sectionImage} alt="About our company" className="w-full h-full object-cover" loading="lazy" />
+          <div className="relative rounded-2xl overflow-hidden h-64 md:h-80 mb-12">
+            <ParallaxImage src={sectionImage} alt="About our company" className="absolute inset-0 w-full h-full object-cover" />
           </div>
         )}
 

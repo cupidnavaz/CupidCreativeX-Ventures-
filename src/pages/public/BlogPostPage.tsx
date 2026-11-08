@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase, type BlogPost } from '@/lib/supabase';
 import { useTheme } from '@/lib/theme';
+import { usePageContent } from '@/lib/pageContent';
+import { getHeroImageOverlayStyle } from '@/lib/heroImage';
 import { Link } from '@/lib/router';
 import { Calendar, User, ArrowLeft } from 'lucide-react';
 
@@ -8,9 +10,16 @@ export default function BlogPostPage({ slug }: { slug: string }) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const { settings } = useTheme();
-
   const primary = settings?.color_primary || '#f97316';
   const bg = settings?.color_bg || '#0a0a0f';
+  const { content: blogPageContent } = usePageContent('blog');
+  const heroImageWidth = blogPageContent?.hero_image_width || 560;
+  const heroImageHeight = blogPageContent?.hero_image_height || 420;
+  const heroImageFit = blogPageContent?.hero_image_fit || 'cover';
+  const heroImageOverlay = blogPageContent?.hero_image_overlay || 'gradient';
+  const heroImageOverlayColor = blogPageContent?.hero_image_overlay_color || bg;
+  const heroImageOverlayOpacity = blogPageContent?.hero_image_overlay_opacity ?? 35;
+
   const headingFont = settings?.font_heading || 'Space Grotesk';
   const hf = `'${headingFont}', sans-serif`;
 
@@ -68,10 +77,21 @@ export default function BlogPostPage({ slug }: { slug: string }) {
           </div>
 
           {post.cover_image_url && (
-            <div className="hero-image-shell relative">
-              <div className="hero-image-frame relative aspect-[4/3] rounded-[1.75rem] overflow-hidden border border-white/10 shadow-2xl">
-                <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bg}20, transparent 55%, ${bg}40)` }} />
+            <div
+              className="hero-image-shell relative min-w-0"
+              style={{ width: `min(100%, ${heroImageWidth}px)`, justifySelf: 'end' }}
+            >
+              <div
+                className="hero-image-frame relative rounded-[1.75rem] overflow-hidden border border-white/10 shadow-2xl"
+                style={{ height: `min(${heroImageHeight}px, 70vh)` }}
+              >
+                <img src={post.cover_image_url} alt={post.title} className="w-full h-full" style={{ objectFit: heroImageFit }} />
+                {heroImageOverlay !== 'none' && (
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={getHeroImageOverlayStyle(heroImageOverlay, heroImageOverlayColor, heroImageOverlayOpacity)}
+                  />
+                )}
               </div>
             </div>
           )}

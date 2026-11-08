@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase, type HeroCarouselImage, type PageContent } from '@/lib/supabase';
 import { clearPageContentCache } from '@/lib/pageContent';
+import {
+  HERO_IMAGE_FITS,
+  HERO_IMAGE_OVERLAYS,
+  getHeroImageOverlayStyle,
+  isHeroImageFit,
+  isHeroImageOverlay,
+  normalizeHeroImageColor,
+  type HeroImageFit,
+  type HeroImageOverlay,
+} from '@/lib/heroImage';
 import { ArrowDown, ArrowUp, Save, Trash2, Upload, Check } from 'lucide-react';
 
 const PAGES = [
@@ -34,6 +44,12 @@ export default function AdminPages() {
   const carouselFileInput = useRef<HTMLInputElement>(null);
 
   const [heroImage, setHeroImage] = useState('');
+  const [heroImageWidth, setHeroImageWidth] = useState('560');
+  const [heroImageHeight, setHeroImageHeight] = useState('420');
+  const [heroImageFit, setHeroImageFit] = useState<HeroImageFit>('cover');
+  const [heroImageOverlay, setHeroImageOverlay] = useState<HeroImageOverlay>('gradient');
+  const [heroImageOverlayColor, setHeroImageOverlayColor] = useState('#0a0a0f');
+  const [heroImageOverlayOpacity, setHeroImageOverlayOpacity] = useState('35');
   const [heroCarouselImages, setHeroCarouselImages] = useState<HeroCarouselImage[]>([]);
   const [heroTitle, setHeroTitle] = useState('');
   const [heroSubtitle, setHeroSubtitle] = useState('');
@@ -65,6 +81,12 @@ export default function AdminPages() {
   useEffect(() => {
     const pc = contents[selectedKey];
     setHeroImage(pc?.hero_image_url || '');
+    setHeroImageWidth(String(pc?.hero_image_width || 560));
+    setHeroImageHeight(String(pc?.hero_image_height || 420));
+    setHeroImageFit(pc?.hero_image_fit || 'cover');
+    setHeroImageOverlay(pc?.hero_image_overlay || 'gradient');
+    setHeroImageOverlayColor(normalizeHeroImageColor(pc?.hero_image_overlay_color));
+    setHeroImageOverlayOpacity(String(pc?.hero_image_overlay_opacity ?? 35));
     const carouselImages = pc?.body_content?.hero_carousel_images;
     setHeroCarouselImages(
       Array.isArray(carouselImages)
@@ -112,10 +134,35 @@ export default function AdminPages() {
       parsedBody.hero_carousel_images = heroCarouselImages;
     }
 
+    const width = Number(heroImageWidth);
+    const height = Number(heroImageHeight);
+    if (!Number.isInteger(width) || width < 240 || width > 1600) {
+      setPageError('Hero image width must be a whole number between 240 and 1600 pixels.');
+      setSaving(false);
+      return;
+    }
+    if (!Number.isInteger(height) || height < 180 || height > 1200) {
+      setPageError('Hero image height must be a whole number between 180 and 1200 pixels.');
+      setSaving(false);
+      return;
+    }
+    const overlayOpacity = Number(heroImageOverlayOpacity);
+    if (!Number.isInteger(overlayOpacity) || overlayOpacity < 0 || overlayOpacity > 80) {
+      setPageError('Hero image overlay strength must be a whole number between 0 and 80 percent.');
+      setSaving(false);
+      return;
+    }
+
     const existing = contents[selectedKey];
     const payload = {
       page_key: selectedKey,
       hero_image_url: heroImage,
+      hero_image_width: width,
+      hero_image_height: height,
+      hero_image_fit: heroImageFit,
+      hero_image_overlay: heroImageOverlay,
+      hero_image_overlay_color: normalizeHeroImageColor(heroImageOverlayColor),
+      hero_image_overlay_opacity: overlayOpacity,
       hero_title: heroTitle,
       hero_subtitle: heroSubtitle,
       body_content: parsedBody,
@@ -263,11 +310,141 @@ export default function AdminPages() {
             </label>
           </div>
           {heroImage && (
-            <div className="mt-3 rounded-lg overflow-hidden max-h-48">
-              <img src={heroImage} alt="Hero preview" className="w-full h-full object-cover" loading="lazy" />
+            <div
+              className="relative mt-3 max-w-full overflow-hidden rounded-lg bg-black/20"
+              style={{ width: `min(100%, ${Number(heroImageWidth) || 560}px)`, height: `min(${Number(heroImageHeight) || 420}px, 240px)` }}
+            >
+              <img
+                src={heroImage}
+                alt="Hero preview"
+                className="h-full w-full"
+                style={{ objectFit: heroImageFit }}
+                loading="lazy"
+              />
+              {heroImageOverlay !== 'none' && (
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={getHeroImageOverlayStyle(heroImageOverlay, heroImageOverlayColor, Number(heroImageOverlayOpacity) || 0)}
+                />
+              )}
             </div>
           )}
         </div>
+
+        <section aria-labelledby="hero-image-size-heading" className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 id="hero-image-size-heading" className="text-sm font-semibold text-gray-200">Hero image size</h3>
+              <p className="mt-1 text-xs text-gray-500">Set the display width and height in pixels. The image scales down to fit smaller screens.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setHeroImageWidth('560'); setHeroImageHeight('420'); }}
+              disabled={saving || uploadingField !== null}
+              className="text-xs font-medium text-gray-400 underline underline-offset-4 transition hover:text-white disabled:opacity-50"
+            >
+              Reset to 560 × 420
+            </button>
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className="block text-xs font-medium text-gray-400">
+              Width (px)
+              <input
+                type="number"
+                min={240}
+                max={1600}
+                step={10}
+                value={heroImageWidth}
+                onChange={(event) => setHeroImageWidth(event.target.value)}
+                disabled={saving}
+                className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:opacity-60"
+              />
+            </label>
+            <label className="block text-xs font-medium text-gray-400">
+              Height (px)
+              <input
+                type="number"
+                min={180}
+                max={1200}
+                step={10}
+                value={heroImageHeight}
+                onChange={(event) => setHeroImageHeight(event.target.value)}
+                disabled={saving}
+                className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:opacity-60"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section aria-labelledby="hero-image-display-heading" className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div>
+            <h3 id="hero-image-display-heading" className="text-sm font-semibold text-gray-200">Image display</h3>
+            <p className="mt-1 text-xs text-gray-500">Choose how the image fits its frame and whether it has a color overlay.</p>
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className="block text-xs font-medium text-gray-400">
+              Image fit
+              <select
+                value={heroImageFit}
+                onChange={(event) => {
+                  if (isHeroImageFit(event.target.value)) setHeroImageFit(event.target.value);
+                }}
+                disabled={saving}
+                className="mt-2 w-full rounded-lg border border-white/10 bg-gray-950 px-3 py-2.5 text-sm text-white focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:opacity-60"
+              >
+                {HERO_IMAGE_FITS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block text-xs font-medium text-gray-400">
+              Overlay style
+              <select
+                value={heroImageOverlay}
+                onChange={(event) => {
+                  if (isHeroImageOverlay(event.target.value)) setHeroImageOverlay(event.target.value);
+                }}
+                disabled={saving}
+                className="mt-2 w-full rounded-lg border border-white/10 bg-gray-950 px-3 py-2.5 text-sm text-white focus:border-orange-500/60 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:opacity-60"
+              >
+                {HERO_IMAGE_OVERLAYS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </label>
+            {heroImageOverlay !== 'none' && (
+              <>
+                <label className="block text-xs font-medium text-gray-400">
+                  Overlay color
+                  <span className="mt-2 flex h-[42px] items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-3">
+                    <input
+                      type="color"
+                      aria-label="Hero image overlay color"
+                      value={normalizeHeroImageColor(heroImageOverlayColor)}
+                      onChange={(event) => setHeroImageOverlayColor(event.target.value)}
+                      disabled={saving}
+                      className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent p-0 disabled:cursor-not-allowed"
+                    />
+                    <span className="text-sm text-gray-200">{normalizeHeroImageColor(heroImageOverlayColor)}</span>
+                  </span>
+                </label>
+                <label className="block text-xs font-medium text-gray-400">
+                  Overlay strength <span className="text-gray-500">{heroImageOverlayOpacity}%</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={80}
+                    step={5}
+                    value={heroImageOverlayOpacity}
+                    onChange={(event) => setHeroImageOverlayOpacity(event.target.value)}
+                    disabled={saving}
+                    className="mt-3 block w-full accent-orange-500 disabled:opacity-60"
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </section>
 
         <div>
           <label className="block text-sm text-gray-400 mb-1">Hero Title</label>

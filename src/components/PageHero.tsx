@@ -1,5 +1,6 @@
 import { useTheme } from '@/lib/theme';
 import { usePageContent } from '@/lib/pageContent';
+import { getHeroImageOverlayStyle } from '@/lib/heroImage';
 
 export function PageHero({
   pageKey,
@@ -22,6 +23,12 @@ export function PageHero({
   const hf = `'${headingFont}', sans-serif`;
 
   const heroImage = content?.hero_image_url || '';
+  const heroImageWidth = content?.hero_image_width || 560;
+  const heroImageHeight = content?.hero_image_height || 420;
+  const heroImageFit = content?.hero_image_fit || 'cover';
+  const heroImageOverlay = content?.hero_image_overlay || 'gradient';
+  const heroImageOverlayColor = content?.hero_image_overlay_color || bg;
+  const heroImageOverlayOpacity = content?.hero_image_overlay_opacity ?? 35;
   const title = content?.hero_title || defaultTitle;
   const subtitle = content?.hero_subtitle || defaultSubtitle || '';
 
@@ -85,14 +92,31 @@ export function PageHero({
         </div>
 
         {heroImage && (
-          <div className="hero-image-shell relative mx-auto w-full max-w-xl lg:ml-auto">
+          <div
+            className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto"
+            style={{ width: `min(100%, ${heroImageWidth}px)` }}
+          >
             <div
               className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-20"
               style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
             />
-            <div className="hero-image-frame relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-white/10 shadow-2xl">
-              <img src={heroImage} alt={`${title} page`} className="w-full h-full object-cover" fetchPriority="high" />
-              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bg}25, transparent 55%, ${bg}45)` }} />
+            <div
+              className="hero-image-frame relative overflow-hidden rounded-[1.75rem] border border-white/10 shadow-2xl"
+              style={{ height: `min(${heroImageHeight}px, 70vh)` }}
+            >
+              <img
+                src={heroImage}
+                alt={`${title} page`}
+                className="w-full h-full"
+                style={{ objectFit: heroImageFit }}
+                fetchPriority="high"
+              />
+              {heroImageOverlay !== 'none' && (
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={getHeroImageOverlayStyle(heroImageOverlay, heroImageOverlayColor, heroImageOverlayOpacity)}
+                />
+              )}
             </div>
           </div>
         )}

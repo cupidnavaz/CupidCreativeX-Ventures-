@@ -31,6 +31,8 @@ import {
   MapPin,
 } from 'lucide-react';
 import { ProjectOverviewModal } from '@/components/public/ProjectOverviewModal';
+import { ParallaxImage } from '@/components/public/ParallaxImage';
+import { getHeroImageOverlayStyle, type HeroImageFit, type HeroImageOverlay } from '@/lib/heroImage';
 import { getLiveProjectUrl } from '@/lib/projectLinks';
 
 export default function HomePage() {
@@ -116,6 +118,12 @@ export default function HomePage() {
         accent={accent}
         bg={bg}
         heroSlides={heroSlides}
+        heroImageWidth={content?.hero_image_width || 560}
+        heroImageHeight={content?.hero_image_height || 420}
+        heroImageFit={content?.hero_image_fit || 'cover'}
+        heroImageOverlay={content?.hero_image_overlay || 'gradient'}
+        heroImageOverlayColor={content?.hero_image_overlay_color || bg}
+        heroImageOverlayOpacity={content?.hero_image_overlay_opacity ?? 35}
         stats={stats}
         navigate={navigate}
       />
@@ -187,6 +195,12 @@ function Hero({
   accent,
   bg,
   heroSlides,
+  heroImageWidth,
+  heroImageHeight,
+  heroImageFit,
+  heroImageOverlay,
+  heroImageOverlayColor,
+  heroImageOverlayOpacity,
   stats,
   navigate,
 }: {
@@ -196,6 +210,12 @@ function Hero({
   accent: string;
   bg: string;
   heroSlides: { src: string; alt: string }[];
+  heroImageWidth: number;
+  heroImageHeight: number;
+  heroImageFit: HeroImageFit;
+  heroImageOverlay: HeroImageOverlay;
+  heroImageOverlayColor: string;
+  heroImageOverlayOpacity: number;
   stats: { value: number; label: string; icon: typeof Award; suffix: string }[];
   navigate: (to: string) => void;
 }) {
@@ -260,12 +280,23 @@ function Hero({
             <SocialLinks className="mt-8 animate-fade-up" />
           </div>
           {heroSlides.length > 0 && (
-            <div className="hero-image-shell relative mx-auto w-full max-w-xl lg:ml-auto">
+            <div
+              className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto"
+              style={{ width: `min(100%, ${heroImageWidth}px)` }}
+            >
               <div
                 className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-20"
                 style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
               />
-              <HeroImageCarousel slides={heroSlides} bg={bg} />
+              <HeroImageCarousel
+                slides={heroSlides}
+                bg={bg}
+                imageHeight={heroImageHeight}
+                imageFit={heroImageFit}
+                imageOverlay={heroImageOverlay}
+                imageOverlayColor={heroImageOverlayColor}
+                imageOverlayOpacity={heroImageOverlayOpacity}
+              />
             </div>
           )}
         </div>
@@ -336,9 +367,19 @@ function StatCounter({
 function HeroImageCarousel({
   slides,
   bg,
+  imageHeight,
+  imageFit,
+  imageOverlay,
+  imageOverlayColor,
+  imageOverlayOpacity,
 }: {
   slides: { src: string; alt: string }[];
   bg: string;
+  imageHeight: number;
+  imageFit: HeroImageFit;
+  imageOverlay: HeroImageOverlay;
+  imageOverlayColor: string;
+  imageOverlayOpacity: number;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -392,7 +433,8 @@ function HeroImageCarousel({
       role="region"
       aria-label="Featured work"
       aria-roledescription="carousel"
-      className="hero-image-frame relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-white/10 shadow-2xl"
+      className="hero-image-frame relative overflow-hidden rounded-[1.75rem] border border-white/10 shadow-2xl"
+      style={{ height: `min(${imageHeight}px, 70vh)` }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={(event) => setPaused(event.currentTarget.contains(document.activeElement))}
       onFocusCapture={() => setPaused(true)}
@@ -402,12 +444,15 @@ function HeroImageCarousel({
         key={activeSlide.src}
         src={activeSlide.src}
         alt={activeSlide.alt}
-        className={`hero-carousel-image absolute inset-0 h-full w-full object-cover ${parallaxActive ? 'is-playing' : ''}`}
+        className={`hero-carousel-image absolute inset-0 h-full w-full ${parallaxActive ? 'is-playing' : ''}`}
+        style={{ objectFit: imageFit }}
       />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: `linear-gradient(135deg, ${bg}25, transparent 55%, ${bg}55)` }}
-      />
+      {imageOverlay !== 'none' && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={getHeroImageOverlayStyle(imageOverlay, imageOverlayColor || bg, imageOverlayOpacity)}
+        />
+      )}
       {slides.length > 1 && (
         <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-3">
           <div role="group" className="flex items-center gap-1.5" aria-label="Choose featured image">
@@ -1007,7 +1052,11 @@ function AboutPreview({
           <div className={`grid grid-cols-1 ${aboutImage ? 'md:grid-cols-2' : ''} gap-12 items-center`}>
             {aboutImage && (
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
-                <img src={aboutImage} alt={`${settings?.brand_name || 'CupidCreativeX'} team and work`} className="w-full h-full object-cover" loading="lazy" />
+                <ParallaxImage
+                  src={aboutImage}
+                  alt={`${settings?.brand_name || 'CupidCreativeX'} team and work`}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
                 <div
                   className="absolute inset-0"
                   style={{ background: `linear-gradient(135deg, ${primary}15, transparent 55%, ${accent}20)` }}

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import type { HeroImageFit, HeroImageOverlay } from './heroImage';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -132,6 +133,12 @@ export type PageContent = {
   id: string;
   page_key: string;
   hero_image_url: string;
+  hero_image_width: number;
+  hero_image_height: number;
+  hero_image_fit: HeroImageFit;
+  hero_image_overlay: HeroImageOverlay;
+  hero_image_overlay_color: string;
+  hero_image_overlay_opacity: number;
   hero_title: string;
   hero_subtitle: string;
   body_content: Record<string, unknown>;
