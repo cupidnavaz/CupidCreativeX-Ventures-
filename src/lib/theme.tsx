@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { supabase, type SiteSettings } from './supabase';
+import { isSupabaseConfigured, supabase, type SiteSettings } from './supabase';
 
 type ThemeContextType = {
   settings: SiteSettings | null;
@@ -63,6 +63,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
+    if (!isSupabaseConfigured) {
+      setSettings(null);
+      setLoading(false);
+      return;
+    }
+
     const { data } = await supabase.from('site_settings').select('*').maybeSingle();
     setSettings(data as SiteSettings | null);
     setLoading(false);
