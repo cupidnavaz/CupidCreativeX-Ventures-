@@ -1005,7 +1005,7 @@ function ProjectCard({
 }
 
 /* ----------------------------------------------------------------- */
-/* About Preview                                                      */
+/* About Preview                                                     */
 /* ----------------------------------------------------------------- */
 
 function AboutPreview({
@@ -1055,10 +1055,10 @@ function AboutPreview({
                 <ParallaxImage
                   src={aboutImage}
                   alt={`${settings?.brand_name || 'CupidCreativeX'} team and work`}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-0 pointer-events-none"
                   style={{ background: `linear-gradient(135deg, ${primary}15, transparent 55%, ${accent}20)` }}
                 />
               </div>
