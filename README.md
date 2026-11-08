@@ -7,6 +7,7 @@
     <a href="https://github.com/cupidnavaz/CupidCreativeX-Ventures-"><img alt="GitHub stars" src="https://img.shields.io/github/stars/cupidnavaz/CupidCreativeX-Ventures-?style=for-the-badge&logo=github&label=stars"></a>
     <a href="https://github.com/cupidnavaz/CupidCreativeX-Ventures-/forks"><img alt="GitHub forks" src="https://img.shields.io/github/forks/cupidnavaz/CupidCreativeX-Ventures-?style=for-the-badge&logo=github&label=forks"></a>
     <a href="https://github.com/cupidnavaz/CupidCreativeX-Ventures-/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/cupidnavaz/CupidCreativeX-Ventures-?style=for-the-badge&logo=github&label=issues"></a>
+    <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-7c3aed?style=for-the-badge&logo=opensourceinitiative&logoColor=white"></a>
     <img alt="Latest commit" src="https://img.shields.io/github/last-commit/cupidnavaz/CupidCreativeX-Ventures-?style=for-the-badge&logo=github&label=updated">
   </p>
   <p>
@@ -19,11 +20,20 @@
 </div>
 
 <p align="center">
+  <img src="public/cupidcreativex-showcase.gif" alt="Animated CupidCreativeX digital transformation banner featuring web and app development, generative AI, UI/UX, analytics, graphic design, consultation, and digital marketing" width="900">
+  <br>
+  <sub><a href="public/cupidcreativex-digital-transformation.jpg">View the original banner without animation</a></sub>
+</p>
+
+<p align="center">
   <a href="#overview">Overview</a> ·
   <a href="#features">Features</a> ·
   <a href="#dashboard-analytics">Dashboard analytics</a> ·
+  <a href="#project-pipeline">Project pipeline</a> ·
+  <a href="#interactive-experience">Interactive experience</a> ·
   <a href="#quick-start">Quick start</a> ·
-  <a href="#project-structure">Project structure</a>
+  <a href="#project-structure">Project structure</a> ·
+  <a href="#license">License</a>
 </p>
 
 > **At a glance** — A responsive public-facing agency site, a 13-section admin workspace, and a Supabase content layer. Repository badges above refresh from GitHub; project counts below describe the current source, not live business results.
@@ -102,6 +112,21 @@ The `/admin` area is protected by Supabase authentication. Its 13 navigation sec
 - **Responsive navigation:** the public layout and admin sidebar adapt for smaller screens.
 - **Database policies:** migrations define row-level security and access policies. Review the policies against your own roles and deployment requirements before production use.
 
+## Interactive experience
+
+The interface combines direct navigation with task-focused controls:
+
+| Interaction | What it does |
+|---|---|
+| Public navigation | Move between the agency pages, service details, portfolio overviews, and blog articles. |
+| Contact form | Validate and submit an inquiry; show sending, success, or error feedback. |
+| Admin sign-in / sign-up | Authenticate with Supabase and protect admin routes. |
+| Admin sidebar | Switch between content workspaces; collapse it on smaller screens. |
+| Dashboard KPI cards | Open the matching projects, services, team, or inbox workspace. |
+| Dashboard refresh | Reload counts, recent messages, and the six-month inbox trend. |
+| Content editors | Add, edit, publish, reorder, and delete records where supported by each manager. |
+| README disclosures | Expand the architecture, data model, and pipeline diagrams below without leaving the page. |
+
 ## Dashboard analytics
 
 The dashboard loads its numbers from Supabase; it does not rely on hard-coded business metrics. Four KPI cards show **portfolio projects**, **services**, **team members**, and **unread messages**. The dashboard also includes a six-month inbox trend, a content-library mix, recent messages, loading states, and a manual refresh action.
@@ -132,6 +157,46 @@ xychart-beta
     <td>Unread count alongside total inquiries and an inbox shortcut.</td>
   </tr>
 </table>
+
+## Project pipeline
+
+The diagrams distinguish the **implemented website content flow** from a **suggested client-delivery workflow**. The app manages site content and inquiries; it does not implement a project CRM or automatically track client work through delivery stages.
+
+<details>
+  <summary><strong>Implemented: inquiry and content publishing flows</strong></summary>
+
+  ```mermaid
+  flowchart LR
+      Visitor[Visitor submits contact form] --> Inbox[(Supabase contact_messages)]
+      Inbox --> Admin[Authenticated admin reviews inquiry]
+      Admin --> FollowUp[Client follow-up handled by the team]
+      ContentAdmin[Admin creates or updates content] --> ContentDB[(Supabase content tables)]
+      ContentDB --> PublicSite[Public pages read published content]
+      Assets[Admin uploads media] --> MediaStore[(Supabase Storage)]
+      MediaStore --> ContentAdmin
+  ```
+
+  Contact follow-up and project execution happen outside this application. Content editors and the public site communicate through Supabase; only published content is intended for public presentation.
+</details>
+
+<details>
+  <summary><strong>Suggested: client project delivery workflow</strong></summary>
+
+  This is a proposed agency process for orientation, not a feature or automated pipeline in the application.
+
+  ```mermaid
+  flowchart LR
+      Inquiry[New inquiry] --> Discovery[Discovery]
+      Discovery --> Scope[Scope and proposal]
+      Scope --> Approval[Client approval]
+      Approval --> Design[Design]
+      Design --> Build[Development]
+      Build --> Review[Review and quality checks]
+      Review --> Launch[Launch]
+      Launch --> Support[Ongoing support]
+      Review -. requested changes .-> Design
+  ```
+</details>
 
 <details>
   <summary><strong>Explore the system architecture</strong></summary>
@@ -241,11 +306,16 @@ supabase/
 | `npm run lint` | Run ESLint. |
 | `npm run typecheck` | Type-check the application TypeScript project. |
 
+## License
+
+This repository is licensed under the [MIT License](LICENSE), including its source code and artwork.
+
 ## Notes
 
 - `.env` and `.env.local` are intentionally ignored by Git. Keep credentials out of commits, screenshots, and issue reports.
 - The repository badges above update from GitHub metadata. The route, workspace, table, and migration totals are a source snapshot and should be updated if the project structure changes.
-- No production URL, license, or sample client/project results are claimed here.
+- The animated banner is a gentle loop made from the supplied image; use the original-banner link above for a still version.
+- No production URL or sample client/project results are claimed here.
 
 <p align="center">
   <sub>Built with care by CupidCreativeX Ventures.</sub>
