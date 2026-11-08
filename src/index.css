@@ -713,3 +713,18 @@ button:not(:disabled):active,
     transform: none;
   }
 }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.about-motion-img {
+  animation: float 4s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.about-motion-img:hover {
+  transform: scale(1.02) translateY(-4px);
+}
