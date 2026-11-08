@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import * as Icons from 'lucide-react';
-import { supabase, type SocialLink } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase, type SocialLink } from '@/lib/supabase';
 
 const SOCIAL_ICON_MAP: Record<string, Icons.LucideIcon> = {
   Twitter: Icons.Twitter,
@@ -23,6 +23,8 @@ export function SocialLinksProvider({ children }: { children: ReactNode }) {
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
     supabase
       .from('social_links')
       .select('*')

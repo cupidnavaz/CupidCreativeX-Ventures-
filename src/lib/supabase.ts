@@ -4,7 +4,14 @@ import type { HeroImageFit, HeroImageOverlay } from './heroImage';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Keep the preview renderable when Supabase environment variables are not configured yet.
+// The placeholder is only used to satisfy the client constructor; configure both values for data access.
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'preview-placeholder-anon-key',
+);
 
 export type Service = {
   id: string;
