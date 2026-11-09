@@ -81,7 +81,7 @@ export default function HomePage() {
       const [{ data: svc }, { data: proj }, { data: test }] = await Promise.all([
         supabase.from('services').select('*').eq('published', true).order('sort_order'),
         supabase.from('projects').select('*').eq('published', true).order('sort_order').limit(6),
-        supabase.from('testimonials').select('*').eq('published', true).order('sort_order').limit(5),
+        supabase.from('testimonials').select('*').eq('published', true).order('sort_order').limit(9),
       ]);
       setServices(svc || []);
       setProjects(proj || []);
@@ -1205,17 +1205,35 @@ function TestimonialsCarousel({
   const [paused, setPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const count = testimonials.length;
-  const next = useCallback(() => setActive((p) => (p + 1) % Math.max(count, 1)), [count]);
-  const prev = useCallback(() => setActive((p) => (p - 1 + count) % Math.max(count, 1)), [count]);
+  // Hardcode 3 per slide on desktop (1 on mobile, 2 on tablet, 3 on desktop)
+  const [perSlide, setPerSlide] = useState(3);
 
   useEffect(() => {
-    if (paused || count <= 1) return;
-    const id = setInterval(next, 5500);
-    return () => clearInterval(id);
-  }, [paused, next, count]);
+    const updatePerSlide = () => {
+      setPerSlide(window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3);
+    };
+    updatePerSlide();
+    window.addEventListener('resize', updatePerSlide);
+    return () => window.removeEventListener('resize', updatePerSlide);
+  }, []);
 
-  if (count === 0) return null;
+  const slides: Testimonial[][] = [];
+  for (let i = 0; i < testimonials.length; i += perSlide) {
+    slides.push(testimonials.slice(i, i + perSlide));
+  }
+  const slideCount = slides.length;
+  const activeSlide = Math.min(active, Math.max(slideCount - 1, 0));
+
+  const next = useCallback(() => setActive((p) => (p + 1) % Math.max(slideCount, 1)), [slideCount]);
+  const prev = useCallback(() => setActive((p) => (p - 1 + slideCount) % Math.max(slideCount, 1)), [slideCount]);
+
+  useEffect(() => {
+    if (paused || slideCount <= 1) return;
+    const id = setInterval(next, 6000);
+    return () => clearInterval(id);
+  }, [paused, next, slideCount]);
+
+  if (testimonials.length === 0) return null;
 
   return (
     <section className="py-24 relative overflow-hidden">
@@ -1223,7 +1241,7 @@ function TestimonialsCarousel({
         className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-[120px]"
         style={{ background: `${primary}15` }}
       />
-      <div className="max-w-5xl mx-auto px-6 relative">
+      <div className="w-full px-8 md:px-12 lg:px-20 relative">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-4">
             <Star className="w-4 h-4" style={{ color: primary }} />
@@ -1252,72 +1270,98 @@ function TestimonialsCarousel({
           <div ref={trackRef} className="overflow-hidden">
             <div
               className="flex transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-              style={{ transform: `translateX(-${active * 100}%)` }}
+              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
             >
-              {testimonials.map((t) => (
-                <div key={t.id} className="w-full flex-shrink-0 px-1">
-                  <div className="glass glass-hover rounded-3xl p-8 md:p-12 relative">
-                    <Quote className="absolute top-6 right-6 w-12 h-12 opacity-10" style={{ color: primary }} />
-                    <div className="flex gap-1 mb-5">
-                      {Array.from({ length: t.rating }).map((_, i) => (
-                        <Star key={i} className="w-5 h-5" style={{ color: primary }} fill="currentColor" />
-                      ))}
-                    </div>
-                    <p className="text-gray-200 text-lg md:text-xl leading-relaxed mb-8">"{t.quote}"</p>
-                    <div className="flex items-center gap-4">
-                      {t.avatar_url ? (
-                        <img
-                          src={t.avatar_url}
-                          alt={t.client_name}
-                          className="w-12 h-12 rounded-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
-                          style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
-                        >
-                          {t.client_name.charAt(0)}
+              {slides.map((slide, slideIndex) => (
+                <div
+                  key={slideIndex}
+                  className={`min-w-full grid ${perSlide === 1 ? 'grid-cols-1' : perSlide === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-6 px-1`}
+                >
+                  {slide.map((t) => (
+                    <div
+                      key={t.id}
+                      className="group relative glass rounded-3xl p-8 flex flex-col justify-between h-full transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
+                    >
+                      {/* Neon Border & Glow Effect on Hover */}
+                      <div
+                        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+                        style={{
+                          boxShadow: `inset 0 0 25px ${primary}25, 0 15px 35px -5px ${primary}35`,
+                          border: `1px solid ${primary}50`,
+                        }}
+                      />
+
+                      {/* Ambient background glow on hover */}
+                      <div 
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
+                        style={{ background: `radial-gradient(circle at center top, ${accent}15, transparent 75%)` }}
+                      />
+
+                      <div className="relative z-25">
+                        <Quote className="absolute top-0 right-0 w-10 h-10 opacity-10" style={{ color: primary }} />
+                        <div className="flex gap-1 mb-4">
+                          {Array.from({ length: t.rating }).map((_, i) => (
+                            <Star key={i} className="w-4 h-4" style={{ color: primary }} fill="currentColor" />
+                          ))}
                         </div>
-                      )}
-                      <div>
-                        <div className="font-semibold text-white">{t.client_name}</div>
-                        <div className="text-sm text-gray-500">{t.company}</div>
+                        <p className="text-gray-200 text-base leading-relaxed mb-6">"{t.quote}"</p>
+                      </div>
+
+                      <div className="relative z-25 flex items-center gap-4 mt-auto pt-4 border-t border-white/10">
+                        {t.avatar_url ? (
+                          <img
+                            src={t.avatar_url}
+                            alt={t.client_name}
+                            className="w-11 h-11 rounded-full object-cover shrink-0"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div
+                            className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold shrink-0"
+                            style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
+                          >
+                            {t.client_name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-white truncate">{t.client_name}</div>
+                          <div className="text-xs text-gray-400 truncate">{t.company}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               ))}
             </div>
           </div>
 
-          {count > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-8">
+          {slideCount > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-10">
               <button
                 onClick={prev}
-                aria-label="Previous testimonial"
-                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110"
+                aria-label="Previous testimonials"
+                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <div className="flex gap-2">
-                {testimonials.map((_, i) => (
+                {slides.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActive(i)}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                    className="h-2 rounded-full transition-all duration-300"
+                    aria-label={`Go to testimonial slide ${i + 1}`}
+                    className="h-2 rounded-full transition-all duration-300 cursor-pointer"
                     style={{
-                      width: i === active ? 28 : 8,
-                      background: i === active ? primary : 'rgba(255,255,255,0.15)',
+                      width: i === activeSlide ? 28 : 8,
+                      background: i === activeSlide ? primary : 'rgba(255,255,255,0.15)',
                     }}
                   />
                 ))}
               </div>
               <button
                 onClick={next}
-                aria-label="Next testimonial"
-                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110"
+                aria-label="Next testimonials"
+                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
