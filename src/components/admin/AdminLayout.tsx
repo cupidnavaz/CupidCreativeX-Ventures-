@@ -41,16 +41,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen text-gray-200 flex" style={{ backgroundColor: bg }}>
       {/* Sidebar */}
       <aside
-        className={`fixed md:sticky top-0 left-0 h-screen w-64 glass border-r border-white/5 z-50 transition-transform duration-300 ${
+        className={`fixed md:sticky top-0 left-0 h-screen w-64 glass border-r border-white/5 z-50 transition-transform duration-300 flex flex-col justify-between ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div className="p-6">
-          <Link to="/" className="block mb-8">
-            <Logo size="sm" />
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <Link to="/" className="block mb-8 group/logo">
+            <div className="transition-transform duration-300 group-hover/logo:scale-105">
+              <Logo size="sm" />
+            </div>
           </Link>
 
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = path === item.to;
@@ -58,57 +60,98 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <button
                   key={item.to}
                   onClick={() => { navigate(item.to); setSidebarOpen(false); }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                  className={`group/item relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 overflow-hidden cursor-pointer ${
+                    active ? '' : 'hover:-translate-y-0.5'
+                  }`}
                   style={active ? {
-                    background: `linear-gradient(to right, ${primary}20, ${accent}10)`,
+                    background: `linear-gradient(135deg, ${primary}25, ${accent}15)`,
                     color: primary,
-                    border: `1px solid ${primary}20`,
-                  } : undefined}
+                    boxShadow: `0 8px 20px -4px ${primary}30`,
+                    border: `1px solid ${primary}50`,
+                  } : {}}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className={active ? '' : 'text-gray-400 hover:text-white'}>{item.label}</span>
+                  {/* Neon Glow & Border on Hover for Inactive Items */}
+                  {!active && (
+                    <>
+                      <div
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+                        style={{
+                          boxShadow: `inset 0 0 15px ${primary}20, 0 6px 15px -3px ${primary}30`,
+                          border: `1px solid ${primary}40`,
+                        }}
+                      />
+                      <div 
+                        className="absolute inset-0 opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 pointer-events-none z-0" 
+                        style={{ background: `radial-gradient(circle at center top, ${accent}10, transparent 80%)` }}
+                      />
+                    </>
+                  )}
+
+                  <Icon className={`w-4 h-4 relative z-20 transition-transform duration-300 group-hover/item:scale-110 ${active ? '' : 'text-gray-400 group-hover/item:text-white'}`} style={active ? { color: primary } : undefined} />
+                  <span className={`relative z-20 ${active ? 'font-semibold' : 'text-gray-400 group-hover/item:text-white'}`}>{item.label}</span>
                 </button>
               );
             })}
           </nav>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/5">
-          <div className="text-xs text-gray-500 mb-3 truncate">{user?.email}</div>
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
+        <div className="p-6 border-t border-white/5 relative z-20">
+          <div className="text-xs text-gray-500 mb-3 truncate px-1">{user?.email}</div>
+          
+          <div className="relative group/btn rounded-xl p-[2px]">
+            <div 
+              className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
+            />
+            <button
+              onClick={handleSignOut}
+              className="relative z-10 w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-sm font-medium text-gray-400 hover:text-red-400 bg-white/5 hover:bg-transparent transition-all duration-300 cursor-pointer group-hover/btn:scale-95 shadow-md"
+              style={{ boxShadow: '0 5px 15px -3px rgba(239, 68, 68, 0.2)' }}
+            >
+              <LogOut className="w-4 h-4 transition-transform duration-300 group-hover/btn:-translate-x-0.5" />
+              Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        <header className="glass border-b border-white/5 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <button className="md:hidden text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-          <h1 className="text-lg font-semibold text-white" style={{ fontFamily: `'${headingFont}', sans-serif` }}>
-            Admin Dashboard
-          </h1>
-          <Link to="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            View Site →
+        <header className="glass border-b border-white/5 px-6 md:px-10 py-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+          <div className="flex items-center gap-4">
+            <button 
+              className="md:hidden text-white p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle sidebar menu"
+            >
+              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <h1 className="text-lg font-semibold text-white tracking-wide" style={{ fontFamily: `'${headingFont}', sans-serif` }}>
+              Admin Dashboard
+            </h1>
+          </div>
+
+          <Link 
+            to="/" 
+            className="group/link relative inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl glass glass-hover border border-white/10 transition-all duration-300 hover:-translate-y-0.5"
+            style={{ 
+              borderColor: `${primary}40`,
+            }}
+          >
+            <span className="text-gray-300 group-hover/link:text-white transition-colors">View Site</span>
+            <span className="transition-transform duration-300 group-hover/link:translate-x-1" style={{ color: primary }}>→</span>
           </Link>
         </header>
 
-        <div className="p-6 md:p-8">
+        <main className="p-6 md:p-10 animate-fade-up">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );
