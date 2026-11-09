@@ -16,6 +16,12 @@
   initial-value: 0deg;
 }
 
+@property --card-border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @layer base {
   :root {
     --color-primary: #0a0a0f;
@@ -164,6 +170,24 @@
 
   @keyframes heroBorderRotate {
     to { --hero-border-angle: 360deg; }
+  }
+
+  @keyframes border-rotate {
+    to { --card-border-angle: 360deg; }
+  }
+
+  .animate-border-rotate {
+    background: conic-gradient(
+      from var(--card-border-angle),
+      #f97316,
+      #facc15,
+      #22c55e,
+      #06b6d4,
+      #8b5cf6,
+      #ec4899,
+      #f97316
+    );
+    animation: border-rotate 4s linear infinite;
   }
 
   @keyframes publicHeadingReveal {
@@ -554,7 +578,7 @@
   [role="button"]:hover {
     transform: translateY(-2px);
     filter: brightness(1.06);
-    box-shadow: 0 8px 20px -12px rgba(249, 115, 22, 0.75);
+    box-shadow: 0 8px 20px -12px rgba(206, 91, 10, 0.75);
   }
 
   button:not(:disabled):hover svg,

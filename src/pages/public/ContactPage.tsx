@@ -43,9 +43,9 @@ export default function ContactPage() {
   };
 
   const contactInfo = [
-    { icon: Mail, label: 'Email', value: settings?.contact_email || 'hello@cupidcreativex.com' },
-    { icon: Phone, label: 'Phone', value: settings?.contact_phone || '+1 (555) 123-4567' },
-    { icon: MapPin, label: 'Address', value: settings?.contact_address || '123 Innovation Drive, Tech City' },
+    { icon: Mail, label: 'Email', value: settings?.contact_email || 'hello@cupidcreativex.com', href: `mailto:${settings?.contact_email || 'hello@cupidcreativex.com'}` },
+    { icon: Phone, label: 'Phone', value: settings?.contact_phone || '+1 (555) 123-4567', href: `tel:${(settings?.contact_phone || '+1 (555) 123-4567').replace(/[^\d+]/g, '')}` },
+    { icon: MapPin, label: 'Address', value: settings?.contact_address || '123 Innovation Drive, Tech City', href: null },
   ];
 
   return (
@@ -68,13 +68,42 @@ export default function ContactPage() {
               {contactInfo.map((info, i) => {
                 const Icon = info.icon;
                 return (
-                  <div key={i} className="glass glass-hover rounded-2xl p-6 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0" style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}>
-                      <Icon className="w-6 h-6" style={{ color: primary }} />
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-500">{info.label}</div>
-                      <div className="text-white font-medium">{info.value}</div>
+                  <div 
+                    key={i} 
+                    className="group relative glass rounded-2xl p-6 flex items-center gap-4 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden cursor-pointer"
+                  >
+                    {/* Neon Border & Glow Effect on Hover */}
+                    <div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                      style={{
+                        boxShadow: `inset 0 0 20px ${primary}30, 0 10px 30px -5px ${primary}40`,
+                        border: `1px solid ${primary}60`,
+                      }}
+                    />
+
+                    {/* Ambient background glow on hover */}
+                    <div 
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+                      style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
+                    />
+
+                    <div className="relative z-10 flex items-center gap-4 w-full">
+                      <div 
+                        className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-md" 
+                        style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
+                      >
+                        <Icon className="w-6 h-6" style={{ color: primary }} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-sm text-gray-400">{info.label}</div>
+                        {info.href ? (
+                          <a href={info.href} className="text-white font-medium break-words transition-colors hover:text-white">
+                            {info.value}
+                          </a>
+                        ) : (
+                          <div className="text-white font-medium break-words">{info.value}</div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -83,8 +112,23 @@ export default function ContactPage() {
             <SocialLinks className="mt-8" />
           </div>
 
-          <div className="glass rounded-2xl p-8">
-            <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="group relative glass rounded-2xl p-8 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden">
+            {/* Form Card Neon Border & Glow Effect on Hover */}
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              style={{
+                boxShadow: `inset 0 0 25px ${primary}25, 0 15px 35px -5px ${primary}35`,
+                border: `1px solid ${primary}50`,
+              }}
+            />
+
+            {/* Ambient background glow on hover */}
+            <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+              style={{ background: `radial-gradient(circle at center top, ${accent}15, transparent 75%)` }}
+            />
+
+            <form onSubmit={handleSubmit} className="relative z-10 space-y-5">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Name</label>
                 <input
@@ -92,7 +136,7 @@ export default function ContactPage() {
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-all duration-300 hover:border-white/30"
                   style={{ outlineColor: primary }}
                   placeholder="Your name"
                 />
@@ -104,7 +148,8 @@ export default function ContactPage() {
                   required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-all duration-300 hover:border-white/30"
+                  style={{ outlineColor: primary }}
                   placeholder="you@example.com"
                 />
               </div>
@@ -115,7 +160,8 @@ export default function ContactPage() {
                   required
                   value={form.subject}
                   onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-all duration-300 hover:border-white/30"
+                  style={{ outlineColor: primary }}
                   placeholder="What's this about?"
                 />
               </div>
@@ -126,22 +172,34 @@ export default function ContactPage() {
                   rows={5}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none transition-all duration-300 hover:border-white/30 resize-none"
+                  style={{ outlineColor: primary }}
                   placeholder="Tell us about your project..."
                 />
               </div>
-              <button
-                type="submit"
-                disabled={status === 'sending'}
-                className="w-full px-6 py-3.5 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                style={{ background: `linear-gradient(to right, ${primary}, ${primary}dd)` }}
-              >
-                {status === 'sending' ? 'Sending...' : status === 'sent' ? (
-                  <><Check className="w-5 h-5" /> Message Sent!</>
-                ) : (
-                  <>Send Message <Send className="w-4 h-4" /></>
-                )}
-              </button>
+
+              {/* Animated Submit Button with Rotating Multi-color Border & Zoom-out */}
+              <div className="relative group/btn rounded-xl p-[2px]">
+                {/* Multi-color Rotating Border Background on Hover */}
+                <div 
+                  className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
+                />
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="relative z-10 w-full px-6 py-4 font-semibold text-white bg-[#f97316] hover:bg-transparent rounded-[10px] transition-all duration-500 flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer group-hover/btn:scale-95 shadow-lg"
+                  style={{ boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)' }}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    {status === 'sending' ? 'Sending...' : status === 'sent' ? (
+                      <><Check className="w-5 h-5" /> Message Sent!</>
+                    ) : (
+                      <>Send Message <Send className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" /></>
+                    )}
+                  </span>
+                </button>
+              </div>
+
               {status === 'error' && (
                 <p className="text-red-400 text-sm text-center">Something went wrong. Please try again.</p>
               )}

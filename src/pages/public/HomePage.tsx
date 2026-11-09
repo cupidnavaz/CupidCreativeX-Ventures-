@@ -258,7 +258,6 @@ function Hero({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-              {/* Start Your Project Button: Solid range color -> Transparent on hover */}
               <button
                 type="button"
                 onClick={() => navigate('/contact')}
@@ -275,7 +274,6 @@ function Hero({
                 </span>
               </button>
 
-              {/* View Our Work Button: Turns orange on hover */}
               <button
                 type="button"
                 onClick={() => navigate('/portfolio')}
@@ -310,7 +308,6 @@ function Hero({
         </div>
       </div>
 
-      {/* Stats bar with animated counters */}
       <div className="relative w-full border-t border-white/5 glass lg:absolute lg:bottom-0 lg:left-0 lg:right-0">
         <div className="w-full px-8 md:px-12 lg:px-20 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
@@ -552,12 +549,13 @@ function ServicesSection({
             </p>
           </div>
           {servicesImage && (
-            <div className="rounded-2xl overflow-hidden h-48 lg:h-full border border-white/5">
+            <div className="rounded-2xl overflow-hidden h-48 lg:h-full border border-white/5 bg-gray-900/50 flex items-center justify-center p-4">
               <img src={servicesImage} alt="Our services" className="w-full h-full object-cover" loading="lazy" />
             </div>
           )}
         </div>
 
+        {/* 3 items in a row grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, i) => {
             const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[service.icon] || Icons.Code;
@@ -602,49 +600,66 @@ function ServiceCard({
     <div
       ref={ref}
       onClick={onClick}
-      className={`reveal ${visible ? 'is-visible' : ''} card-tilt glass glass-hover rounded-2xl group cursor-pointer relative overflow-hidden`}
+      className={`reveal ${visible ? 'is-visible' : ''} relative group rounded-2xl p-[2px] transition-all duration-500 cursor-pointer`}
       style={{ transitionDelay: `${index * 0.08}s` }}
     >
-      {/* hover glow */}
-      <div
-        className="absolute -top-16 -right-16 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: `${primary}40` }}
+      {/* Multi-color Rotating Border Background on Hover */}
+      <div 
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-border-rotate"
       />
-      {service.image_url && (
-        <div className="h-40 overflow-hidden bg-gray-800">
-          <img
-            src={service.image_url}
-            alt={service.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            loading="lazy"
-          />
+
+      {/* Inner Card Container */}
+      <div className="relative glass rounded-[15px] overflow-hidden flex flex-col justify-end p-8 min-h-[34rem] bg-[#0a0a0f]/90 h-full">
+        {/* Background Image with Zoom Out on Hover */}
+        {service.image_url ? (
+          <div className="absolute inset-0 w-full h-full overflow-hidden bg-gray-950 z-0">
+            <img
+              src={service.image_url}
+              alt={service.title}
+              className="w-full h-full object-cover opacity-75 group-hover:opacity-40 group-hover:scale-85 transition-all duration-700 ease-out"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-transparent transition-opacity duration-500 group-hover:bg-gray-950/90" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gray-950/90 z-0" />
+        )}
+
+        {/* Content Container */}
+        <div className="relative z-10 flex flex-col justify-end h-full">
+          <div
+            className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center flex-shrink-0 mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg"
+            style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}
+          >
+            <Icon className="w-7 h-7" style={{ color: primary }} />
+          </div>
+
+          <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: hf }}>
+            {service.title}
+          </h3>
+
+          <p className="text-gray-300 leading-relaxed mb-4 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+            {service.description}
+          </p>
+
+          {service.features?.length > 0 && (
+            <div className="grid grid-cols-1 gap-2 max-h-0 opacity-0 group-hover:max-h-40 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
+              {service.features.map((f, idx) => (
+                <div key={idx} className="flex items-center gap-2 text-sm text-gray-300">
+                  <Check className="w-4 h-4 flex-shrink-0" style={{ color: accent }} />
+                  {f}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <span
+            className="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all mt-4"
+            style={{ color: primary }}
+          >
+            Learn more <ArrowRight className="w-4 h-4" />
+          </span>
         </div>
-      )}
-      <div className="relative p-8">
-        <div
-          className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"
-          style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}
-        >
-          <Icon className="w-7 h-7" style={{ color: primary }} />
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: hf }}>
-          {service.title}
-        </h3>
-        <p className="text-gray-400 text-sm leading-relaxed mb-4">{service.description}</p>
-        <ul className="space-y-2 mb-6">
-          {service.features.slice(0, 3).map((f, idx) => (
-            <li key={idx} className="flex items-center gap-2 text-sm text-gray-500">
-              <Check className="w-4 h-4 flex-shrink-0" style={{ color: accent }} />
-              {f}
-            </li>
-          ))}
-        </ul>
-        <span
-          className="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all"
-          style={{ color: primary }}
-        >
-          Learn more <ArrowRight className="w-4 h-4" />
-        </span>
       </div>
     </div>
   );
@@ -673,7 +688,7 @@ function ProcessSection({
   return (
     <section className="py-24 relative overflow-hidden">
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full blur-[140px] opacity-30"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full blur-[140px] opacity-30 pointer-events-none"
         style={{ background: accent }}
       />
       <div className="w-full px-8 md:px-12 lg:px-20 relative">
@@ -698,7 +713,6 @@ function ProcessSection({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-          {/* connecting line */}
           <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           {steps.map((step, i) => (
             <ProcessStep key={i} step={step} index={i} hf={hf} primary={primary} accent={accent} />
@@ -727,27 +741,55 @@ function ProcessStep({
   return (
     <div
       ref={ref}
-      className={`reveal ${visible ? 'is-visible' : ''} relative text-center`}
-      style={{ transitionDelay: `${index * 0.12}s` }}
+      className={`reveal ${visible ? 'is-visible' : ''} group relative text-center glass glass-hover p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden`}
+      style={{
+        transitionDelay: `${index * 0.12}s`,
+      }}
     >
-      <div className="relative inline-flex mb-6">
+      {/* Dynamic Glowing Border & Shadow Effect on Hover */}
+      <div
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          boxShadow: `inset 0 0 20px ${primary}30, 0 10px 30px -5px ${primary}40`,
+          border: `1px solid ${primary}60`,
+        }}
+      />
+
+      {/* Ambient background glow on hover */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+        style={{ background: `radial-gradient(circle at center top, ${primary}20, transparent 70%)` }}
+      />
+
+      <div className="relative inline-flex mb-6 z-10">
         <div
-          className="w-20 h-20 rounded-2xl border border-white/10 flex items-center justify-center mx-auto transition-transform duration-500 hover:scale-110"
-          style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
+          className="w-20 h-20 rounded-2xl border border-white/10 flex items-center justify-center mx-auto transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg"
+          style={{ 
+            background: `linear-gradient(135deg, ${primary}25, ${accent}15)`,
+            boxShadow: `0 0 15px ${primary}20`,
+          }}
         >
-          <Icon className="w-9 h-9" style={{ color: primary }} />
+          <Icon className="w-9 h-9 transition-transform duration-500 group-hover:scale-110" style={{ color: primary }} />
         </div>
         <span
-          className="absolute -top-2 -right-2 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center text-white"
-          style={{ background: accent }}
+          className="absolute -top-2 -right-2 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center text-white shadow-md transition-transform duration-500 group-hover:scale-125"
+          style={{ 
+            background: primary,
+            boxShadow: `0 0 10px ${primary}`,
+          }}
         >
           {index + 1}
         </span>
       </div>
-      <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: hf }}>
-        {step.title}
-      </h3>
-      <p className="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+      
+      <div className="relative z-10">
+        <h3 className="text-xl font-bold text-white mb-2 transition-colors duration-300 group-hover:text-transparent group-hover:bg-clip-text" style={{ fontFamily: hf, backgroundImage: `linear-gradient(135deg, ${primary}, ${accent})` }}>
+          {step.title}
+        </h3>
+        <p className="text-sm text-gray-400 leading-relaxed max-w-xs mx-auto group-hover:text-gray-300 transition-colors duration-300">
+          {step.desc}
+        </p>
+      </div>
     </div>
   );
 }
@@ -772,6 +814,7 @@ function ProjectsShowcase({
   const { ref, visible } = useReveal<HTMLDivElement>();
   const [visibleCount, setVisibleCount] = useState(3);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -788,12 +831,26 @@ function ProjectsShowcase({
     slides.push(projects.slice(i, i + visibleCount));
   }
   const activeSlide = Math.min(activeIndex, Math.max(slides.length - 1, 0));
+
+  // Auto-slide effect for featured projects
+  useEffect(() => {
+    if (paused || slides.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveIndex((index) => (index + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [paused, slides.length]);
+
   const showPrevious = () => setActiveIndex((index) => (index - 1 + slides.length) % slides.length);
   const showNext = () => setActiveIndex((index) => (index + 1) % slides.length);
 
   return (
     <section className="py-24 relative">
-      <div className="w-full px-8 md:px-12 lg:px-20">
+      <div 
+        className="w-full px-8 md:px-12 lg:px-20"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         <div
           ref={ref}
           className={`reveal ${visible ? 'is-visible' : ''} flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-4`}
@@ -1062,7 +1119,7 @@ function AboutPreview({
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
                 <ParallaxImage
                   src={aboutImage}
-                  alt={`${settings?.brand_name || 'CupidCreativeX'} team and work`}
+                  alt={`[CupidCreativeX Ventures](${'https://www.instagram.com/CupidCreativeX'}) team and work`}
                   className="absolute inset-0 w-full h-full object-cover object-center"
                 />
                 <div
@@ -1172,7 +1229,6 @@ function TestimonialsCarousel({
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          {/* Track */}
           <div ref={trackRef} className="overflow-hidden">
             <div
               className="flex transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -1215,7 +1271,6 @@ function TestimonialsCarousel({
             </div>
           </div>
 
-          {/* Controls */}
           {count > 1 && (
             <div className="flex items-center justify-center gap-3 mt-8">
               <button
@@ -1371,115 +1426,174 @@ function HomeContactSection({
     <section className="py-24 relative" aria-labelledby="home-contact-heading">
       <div className="w-full px-8 md:px-12 lg:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 items-start">
-          <div>
-            <h2 id="home-contact-heading" className="text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: hf }}>
-              Contact Us
-            </h2>
-            <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
-              Have a project in mind or feedback to share? Send us a message and our team will be in touch.
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
-              Reviews and comments are sent privately to our team.
-            </p>
+          <div className="flex flex-col gap-6">
+            <div>
+              <h2 id="home-contact-heading" className="text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: hf }}>
+                Contact Us
+              </h2>
+              <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
+                Have a project in mind or feedback to share? Send us a message and our team will be in touch.
+              </p>
+              <p className="text-sm text-gray-500 mt-3">
+                Reviews and comments are sent privately to our team.
+              </p>
+            </div>
+
             {contactDetails.length > 0 && (
-              <address className="mt-8 not-italic">
-                <h3 className="text-sm font-semibold text-white mb-4">Company contact details</h3>
-                <ul className="space-y-4">
-                  {contactDetails.map(({ icon: Icon, label, value, href }) => (
-                    <li key={label} className="flex items-start gap-3 text-sm">
-                      <Icon className="mt-0.5 h-4 w-4 shrink-0" style={{ color: primary }} aria-hidden="true" />
-                      <div className="min-w-0">
-                        <span className="block text-xs text-gray-500">{label}</span>
-                        {href ? (
-                          <a href={href} className="break-words text-gray-300 transition-colors hover:text-white">
-                            {value}
-                          </a>
-                        ) : (
-                          <span className="text-gray-300">{value}</span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+              <address className="group relative glass rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1.5 not-italic overflow-hidden cursor-pointer">
+                {/* Neon Border & Glow Effect on Hover */}
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    boxShadow: `inset 0 0 20px ${primary}30, 0 10px 30px -5px ${primary}40`,
+                    border: `1px solid ${primary}60`,
+                  }}
+                />
+
+                {/* Ambient background glow on hover */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+                  style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
+                />
+
+                <div className="relative z-10">
+                  <h3 className="text-sm font-semibold mb-5 tracking-wide uppercase" style={{ color: primary }}>
+                    Company Contact Details
+                  </h3>
+                  <ul className="space-y-4">
+                    {contactDetails.map(({ icon: Icon, label, value, href }) => (
+                      <li key={label} className="flex items-start gap-4 text-sm group/item">
+                        <div
+                          className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover/item:scale-110 shadow-md"
+                          style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
+                        >
+                          <Icon className="h-4 w-4" style={{ color: primary }} aria-hidden="true" />
+                        </div>
+                        <div className="min-w-0 pt-1">
+                          <span className="block text-xs text-gray-400">{label}</span>
+                          {href ? (
+                            <a href={href} className="break-words text-gray-200 font-medium transition-colors hover:text-white">
+                              {value}
+                            </a>
+                          ) : (
+                            <span className="text-gray-200 font-medium">{value}</span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </address>
             )}
-            <SocialLinks className="mt-6" />
+
+            <SocialLinks className="mt-2" />
           </div>
 
-          <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 md:p-8 space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label htmlFor="home-contact-name" className="block text-sm text-gray-400 mb-2">Name</label>
-                <input
-                  id="home-contact-name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={form.name}
-                  onChange={(event) => setForm({ ...form, name: event.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
-                  style={{ outlineColor: primary }}
-                  placeholder="Your name"
-                />
+          <form 
+            onSubmit={handleSubmit} 
+            className="group relative glass rounded-2xl p-6 md:p-8 space-y-5 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
+          >
+            {/* Form Card Neon Border & Glow Effect on Hover */}
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              style={{
+                boxShadow: `inset 0 0 25px ${primary}25, 0 15px 35px -5px ${primary}35`,
+                border: `1px solid ${primary}50`,
+              }}
+            />
+
+            {/* Ambient background glow on hover */}
+            <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+              style={{ background: `radial-gradient(circle at center top, ${accent}15, transparent 75%)` }}
+            />
+
+            <div className="relative z-10 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="home-contact-name" className="block text-sm text-gray-400 mb-2">Name</label>
+                  <input
+                    id="home-contact-name"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    value={form.name}
+                    onChange={(event) => setForm({ ...form, name: event.target.value })}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
+                    style={{ outlineColor: primary }}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="home-contact-email" className="block text-sm text-gray-400 mb-2">Email</label>
+                  <input
+                    id="home-contact-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={form.email}
+                    onChange={(event) => setForm({ ...form, email: event.target.value })}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
+                    style={{ outlineColor: primary }}
+                    placeholder="you@example.com"
+                  />
+                </div>
               </div>
               <div>
-                <label htmlFor="home-contact-email" className="block text-sm text-gray-400 mb-2">Email</label>
-                <input
-                  id="home-contact-email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={form.email}
-                  onChange={(event) => setForm({ ...form, email: event.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                <label htmlFor="home-contact-subject" className="block text-sm text-gray-400 mb-2">What would you like to share?</label>
+                <select
+                  id="home-contact-subject"
+                  value={form.subject}
+                  onChange={(event) => setForm({ ...form, subject: event.target.value })}
+                  className="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
                   style={{ outlineColor: primary }}
-                  placeholder="you@example.com"
+                >
+                  <option value="Project inquiry">Project inquiry</option>
+                  <option value="General question">General question</option>
+                  <option value="Review or comment">Review or comment</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="home-contact-message" className="block text-sm text-gray-400 mb-2">Message</label>
+                <textarea
+                  id="home-contact-message"
+                  required
+                  rows={5}
+                  value={form.message}
+                  onChange={(event) => setForm({ ...form, message: event.target.value })}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 resize-y transition-all duration-300 hover:border-white/30"
+                  style={{ outlineColor: primary }}
+                  placeholder="Write your message, review, or comment..."
                 />
               </div>
-            </div>
-            <div>
-              <label htmlFor="home-contact-subject" className="block text-sm text-gray-400 mb-2">What would you like to share?</label>
-              <select
-                id="home-contact-subject"
-                value={form.subject}
-                onChange={(event) => setForm({ ...form, subject: event.target.value })}
-                className="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white focus:outline-none focus-visible:ring-2"
-                style={{ outlineColor: primary }}
-              >
-                <option value="Project inquiry">Project inquiry</option>
-                <option value="General question">General question</option>
-                <option value="Review or comment">Review or comment</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="home-contact-message" className="block text-sm text-gray-400 mb-2">Message</label>
-              <textarea
-                id="home-contact-message"
-                required
-                rows={5}
-                value={form.message}
-                onChange={(event) => setForm({ ...form, message: event.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 resize-y"
-                style={{ outlineColor: primary }}
-                placeholder="Write your message, review, or comment..."
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={status === 'sending'}
-              className="px-6 py-3.5 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              style={{ background: `linear-gradient(110deg, ${primary}, ${accent})` }}
-            >
-              {status === 'sending' ? 'Sending...' : status === 'sent' ? 'Message sent' : 'Send message'}
-              {status === 'sent' ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-            </button>
-            <div aria-live="polite">
-              {status === 'error' && (
-                <p className="text-red-400 text-sm">Your message could not be sent. Please try again.</p>
-              )}
-              {status === 'sent' && (
-                <p className="text-green-400 text-sm">Thanks for reaching out. Your message has been received.</p>
-              )}
+
+              {/* Animated Submit Button with Rotating Multi-color Border & Zoom-out */}
+              <div className="relative group/btn rounded-xl p-[2px]">
+                {/* Multi-color Rotating Border Background on Hover */}
+                <div 
+                  className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
+                />
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="relative z-10 w-full px-6 py-4 font-semibold text-white bg-[#f97316] hover:bg-transparent rounded-[10px] transition-all duration-500 flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer group-hover/btn:scale-95 shadow-lg"
+                  style={{ boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)' }}
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    {status === 'sending' ? 'Sending...' : status === 'sent' ? 'Message sent' : 'Send message'}
+                    {status === 'sent' ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" />}
+                  </span>
+                </button>
+              </div>
+
+              <div aria-live="polite">
+                {status === 'error' && (
+                  <p className="text-red-400 text-sm">Your message could not be sent. Please try again.</p>
+                )}
+                {status === 'sent' && (
+                  <p className="text-green-400 text-sm">Thanks for reaching out. Your message has been received.</p>
+                )}
+              </div>
             </div>
           </form>
         </div>
