@@ -47,7 +47,7 @@ export default function ServicesPage() {
 
   return (
     <div style={{ backgroundColor: bg }}>
-      {/* Full-Width Banner Section with Darker Brand-Blended Background & Zoom-Out on Hover */}
+      {/* Full-Width Banner Section with Darker Brand-Blended Background, Zoom-Out, & Steam Effect */}
       <section className="relative pt-28 pb-12 px-8 md:px-12 lg:px-20 overflow-hidden border-b-0">
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
         <div
@@ -69,6 +69,22 @@ export default function ServicesPage() {
                 className="absolute inset-0 opacity-40 pointer-events-none z-0" 
                 style={{ background: `radial-gradient(circle at center top, ${primary}25, transparent 75%)` }}
               />
+
+              {/* Animated Smoke / Steaming Layers */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+                <div 
+                  className="absolute -bottom-10 left-1/4 w-32 h-32 rounded-full blur-[45px] animate-steam-1" 
+                  style={{ background: `radial-gradient(circle, ${primary}40, transparent 70%)` }}
+                />
+                <div 
+                  className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[55px] animate-steam-2" 
+                  style={{ background: `radial-gradient(circle, ${accent}30, transparent 70%)` }}
+                />
+                <div 
+                  className="absolute -bottom-10 right-1/4 w-36 h-36 rounded-full blur-[50px] animate-steam-3" 
+                  style={{ background: `radial-gradient(circle, ${primary}35, transparent 70%)` }}
+                />
+              </div>
 
               <div className="relative z-20 max-w-3xl mx-auto">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full mb-4 border border-white/5">
@@ -198,6 +214,20 @@ export default function ServicesPage() {
       </div>
 
       <div className="w-full px-8 md:px-12 lg:px-20 pb-20">
+        {/* Full-Width Glass Heading Container with Orange Underline */}
+        <div className="w-full relative mb-16 rounded-2xl glass px-8 py-8 text-center backdrop-blur-xl border border-white/10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight pb-3 inline-block relative" style={{ fontFamily: hf }}>
+            Our Services
+            <span 
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full"
+              style={{ 
+                background: primary,
+                boxShadow: `0 0 12px ${primary}` 
+              }}
+            />
+          </h2>
+        </div>
+
         {/* 3 items in a row grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service) => {
@@ -427,7 +457,7 @@ function HeroImageCarousel({
       {slides.length > 1 && (
         <div className="absolute inset-x-4 bottom-4 z-30 flex items-center justify-between gap-3">
           <div role="group" className="flex items-center gap-1.5" aria-label="Choose featured image">
-            {slides.map((slide, index) => (
+            {slides.name?.map ? null : slides.map((slide, index) => (
               <button
                 key={slide.src}
                 type="button"

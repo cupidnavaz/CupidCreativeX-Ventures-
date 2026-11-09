@@ -44,7 +44,7 @@ export default function AboutPage() {
 
   return (
     <div style={{ backgroundColor: bg }}>
-      {/* Full-Width Banner Section with Darker Brand-Blended Background */}
+      {/* Full-Width Banner Section with Darker Brand-Blended Background, Zoom-Out, & Steam Effect */}
       <section className="relative pt-28 pb-12 px-8 md:px-12 lg:px-20 overflow-hidden border-b-0">
         <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
         <div
@@ -66,6 +66,22 @@ export default function AboutPage() {
                 className="absolute inset-0 opacity-40 pointer-events-none z-0" 
                 style={{ background: `radial-gradient(circle at center top, ${primary}25, transparent 75%)` }}
               />
+
+              {/* Animated Smoke / Steaming Layers */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
+                <div 
+                  className="absolute -bottom-10 left-1/4 w-32 h-32 rounded-full blur-[45px] animate-steam-1" 
+                  style={{ background: `radial-gradient(circle, ${primary}40, transparent 70%)` }}
+                />
+                <div 
+                  className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-[55px] animate-steam-2" 
+                  style={{ background: `radial-gradient(circle, ${accent}30, transparent 70%)` }}
+                />
+                <div 
+                  className="absolute -bottom-10 right-1/4 w-36 h-36 rounded-full blur-[50px] animate-steam-3" 
+                  style={{ background: `radial-gradient(circle, ${primary}35, transparent 70%)` }}
+                />
+              </div>
 
               <div className="relative z-20 max-w-3xl mx-auto">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full mb-4 border border-white/5">
@@ -94,6 +110,22 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <div className="w-full px-8 md:px-12 lg:px-20 pb-12">
+        {/* Full-Width Glass Heading Container with Orange Underline */}
+        <div className="w-full relative rounded-2xl glass px-8 py-8 text-center backdrop-blur-xl border border-white/10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight pb-3 inline-block relative" style={{ fontFamily: hf }}>
+            Our Story & Vision
+            <span 
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full"
+              style={{ 
+                background: primary,
+                boxShadow: `0 0 12px ${primary}` 
+              }}
+            />
+          </h2>
+        </div>
+      </div>
+
       {/* Text and Image Container */}
       <section className="w-full px-8 md:px-12 lg:px-20 mb-20 border-t-0 border-b-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -117,7 +149,7 @@ export default function AboutPage() {
               </span>
             </h2>
             <p className="text-gray-400 text-base md:text-lg leading-relaxed">
-              Founded on the belief that technology should empower creativity, CupidCreativeX Ventures brings together top-tier engineering and world-class design. We partner with forward-thinking brands to build robust digital solutions that scale.
+              Founded on the belief that technology should empower creativity, [CupidCreativeX Ventures](https://www.instagram.com/cupidcreativex/) brings together top-tier engineering and world-class design. We partner with forward-thinking brands to build robust digital solutions that scale.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="flex items-center gap-3 text-gray-300">

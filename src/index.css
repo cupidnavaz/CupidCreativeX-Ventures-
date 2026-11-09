@@ -190,6 +190,40 @@
     animation: border-rotate 4s linear infinite;
   }
 
+  /* Animated Smoke / Steam Effects */
+  @keyframes steam-drift {
+    0% {
+      transform: translateY(0) translateX(0) scale(1);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.25;
+    }
+    50% {
+      transform: translateY(-60px) translateX(15px) scale(1.4);
+      opacity: 0.15;
+    }
+    80% {
+      opacity: 0.08;
+    }
+    100% {
+      transform: translateY(-120px) translateX(-15px) scale(1.8);
+      opacity: 0;
+    }
+  }
+
+  .animate-steam-1 {
+    animation: steam-drift 8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  }
+
+  .animate-steam-2 {
+    animation: steam-drift 11s cubic-bezier(0.25, 1, 0.5, 1) infinite 2s;
+  }
+
+  .animate-steam-3 {
+    animation: steam-drift 9s cubic-bezier(0.25, 1, 0.5, 1) infinite 4s;
+  }
+
   @keyframes publicHeadingReveal {
     from { opacity: 0.72; transform: translateY(9px); }
     to { opacity: 1; transform: translateY(0); }
