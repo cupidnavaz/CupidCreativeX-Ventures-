@@ -4,7 +4,7 @@ import { useTheme } from '@/lib/theme';
 import { usePageContent } from '@/lib/pageContent';
 import { PageHero } from '@/components/PageHero';
 import { SocialLinks } from '@/components/public/SocialLinks';
-import { Mail, Phone, MapPin, Send, Check } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Check, MessageSquare } from 'lucide-react';
 
 export default function ContactPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -42,10 +42,38 @@ export default function ContactPage() {
     }
   };
 
+  const rawPhone = settings?.contact_phone || '+1 (555) 123-4567';
+  const cleanPhone = rawPhone.replace(/[^\d+]/g, '');
+
   const contactInfo = [
-    { icon: Mail, label: 'Email', value: settings?.contact_email || 'hello@cupidcreativex.com', href: `mailto:${settings?.contact_email || 'hello@cupidcreativex.com'}` },
-    { icon: Phone, label: 'Phone', value: settings?.contact_phone || '+1 (555) 123-4567', href: `tel:${(settings?.contact_phone || '+1 (555) 123-4567').replace(/[^\d+]/g, '')}` },
-    { icon: MapPin, label: 'Address', value: settings?.contact_address || '123 Innovation Drive, Tech City', href: null },
+    { 
+      icon: Mail, 
+      label: 'Email', 
+      value: settings?.contact_email || 'hello@cupidcreativex.com', 
+      href: `mailto:${settings?.contact_email || 'hello@cupidcreativex.com'}`,
+      isWhatsApp: false
+    },
+    { 
+      icon: Phone, 
+      label: 'Phone', 
+      value: rawPhone, 
+      href: `tel:${cleanPhone}`,
+      isWhatsApp: false
+    },
+    { 
+      icon: MessageSquare, 
+      label: 'WhatsApp', 
+      value: rawPhone, 
+      href: `https://wa.me/${cleanPhone.replace('+', '')}`,
+      isWhatsApp: true
+    },
+    { 
+      icon: MapPin, 
+      label: 'Address', 
+      value: settings?.contact_address || '123 Innovation Drive, Tech City', 
+      href: null,
+      isWhatsApp: false
+    },
   ];
 
   return (
@@ -97,8 +125,13 @@ export default function ContactPage() {
                       <div className="min-w-0">
                         <div className="text-sm text-gray-400">{info.label}</div>
                         {info.href ? (
-                          <a href={info.href} className="text-white font-medium break-words transition-colors hover:text-white">
-                            {info.value}
+                          <a 
+                            href={info.href} 
+                            target={info.isWhatsApp ? '_blank' : undefined}
+                            rel={info.isWhatsApp ? 'noopener noreferrer' : undefined}
+                            className="text-white font-medium break-words transition-colors hover:text-white"
+                          >
+                            {info.value} {info.isWhatsApp && <span className="text-xs text-green-400 ml-1">(Chat)</span>}
                           </a>
                         ) : (
                           <div className="text-white font-medium break-words">{info.value}</div>

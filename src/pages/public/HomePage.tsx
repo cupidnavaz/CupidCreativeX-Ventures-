@@ -29,6 +29,7 @@ import {
   Mail,
   Phone,
   MapPin,
+  MessageSquare,
 } from 'lucide-react';
 import { ProjectOverviewModal } from '@/components/public/ProjectOverviewModal';
 import { ParallaxImage } from '@/components/public/ParallaxImage';
@@ -287,12 +288,12 @@ function Hero({
           </div>
           {heroSlides.length > 0 && (
             <div
-              className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto"
+              className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto h-full min-h-[480px]"
               style={{ width: `min(100%, ${heroImageWidth}px)` }}
             >
               <div
-                className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-20"
-                style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
+                className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-30 animate-border-rotate"
+                style={{ background: `linear-gradient(135deg, ${primary}, ${accent}, #8b5cf6, ${primary})` }}
               />
               <HeroImageCarousel
                 slides={heroSlides}
@@ -302,6 +303,8 @@ function Hero({
                 imageOverlay={heroImageOverlay}
                 imageOverlayColor={heroImageOverlayColor}
                 imageOverlayOpacity={heroImageOverlayOpacity}
+                primary={primary}
+                accent={accent}
               />
             </div>
           )}
@@ -353,7 +356,6 @@ function StatCounter({
       ref={ref}
       className={`reveal ${visible ? 'is-visible' : ''} group relative glass rounded-2xl p-6 flex items-center gap-4 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden`}
     >
-      {/* Neon Border & Glow Effect on Hover */}
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
         style={{
@@ -361,13 +363,10 @@ function StatCounter({
           border: `1px solid ${primary}60`,
         }}
       />
-
-      {/* Ambient background glow on hover */}
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
         style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
       />
-
       <div className="relative z-20 flex items-center gap-4 w-full">
         <div
           className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-md"
@@ -397,6 +396,8 @@ function HeroImageCarousel({
   imageOverlay,
   imageOverlayColor,
   imageOverlayOpacity,
+  primary,
+  accent,
 }: {
   slides: { src: string; alt: string }[];
   bg: string;
@@ -405,12 +406,15 @@ function HeroImageCarousel({
   imageOverlay: HeroImageOverlay;
   imageOverlayColor: string;
   imageOverlayOpacity: number;
+  primary: string;
+  accent: string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(true);
-  const [pageVisible, setPageVisible] = useState(!document.hidden);
+  const [pageVisible, setPageVisible] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [spinCount, setSpinCount] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -436,21 +440,31 @@ function HeroImageCarousel({
   }, []);
 
   useEffect(() => {
-    if (slides.length < 2 || paused || !inView || !pageVisible || reducedMotion) return;
+    if (!slides || slides.length < 2 || paused || !inView || !pageVisible || reducedMotion) return;
     const interval = window.setInterval(() => {
       setActiveIndex((index) => (index + 1) % slides.length);
-    }, 6000);
+      setSpinCount((c) => c + 1);
+    }, 3000);
     return () => window.clearInterval(interval);
-  }, [slides.length, paused, inView, pageVisible, reducedMotion]);
+  }, [slides, paused, inView, pageVisible, reducedMotion]);
 
   useEffect(() => {
-    setActiveIndex((index) => Math.min(index, Math.max(slides.length - 1, 0)));
-  }, [slides.length]);
+    if (slides && slides.length > 0) {
+      setActiveIndex((index) => Math.min(index, Math.max(slides.length - 1, 0)));
+    }
+  }, [slides]);
 
-  const goTo = (index: number) => setActiveIndex((index + slides.length) % slides.length);
-  const activeSlide = slides[activeIndex];
-  const parallaxActive = !paused && inView && pageVisible && !reducedMotion;
-  if (!activeSlide) return null;
+  const goTo = (index: number) => {
+    if (!slides || index === activeIndex) return;
+    setActiveIndex((index + slides.length) % slides.length);
+    setSpinCount((c) => c + 1);
+  };
+
+  if (!slides || slides.length === 0) return null;
+
+  const total = slides.length;
+  const angleStep = 360 / Math.max(total, 3);
+  const currentAngle = -activeIndex * angleStep - (spinCount * 360);
 
   return (
     <div
@@ -458,28 +472,65 @@ function HeroImageCarousel({
       role="region"
       aria-label="Featured work"
       aria-roledescription="carousel"
-      className="hero-image-frame relative overflow-hidden rounded-[1.75rem] border border-white/10 shadow-2xl"
-      style={{ height: `min(${imageHeight}px, 70vh)` }}
+      className="hero-image-frame relative overflow-hidden rounded-[1.75rem] border border-white/15 shadow-2xl w-full h-full min-h-[500px]"
+      style={{ 
+        height: '100%',
+        perspective: '1500px',
+        background: `radial-gradient(circle at center, ${primary || '#f97316'}15, ${bg || '#0a0a0f'} 85%)`,
+      }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={(event) => setPaused(event.currentTarget.contains(document.activeElement))}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={(event) => setPaused(event.currentTarget.matches(':hover'))}
     >
-      <img
-        key={activeSlide.src}
-        src={activeSlide.src}
-        alt={activeSlide.alt}
-        className={`hero-carousel-image absolute inset-0 h-full w-full ${parallaxActive ? 'is-playing' : ''}`}
-        style={{ objectFit: imageFit }}
+      <div 
+        className="absolute inset-0 opacity-40 pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          background: `conic-gradient(from ${spinCount * 360}deg at 50% 50%, ${primary || '#f97316'}40, ${accent || '#06b6d4'}40, #8b5cf640, ${primary || '#f97316'}40)`,
+          transform: `rotate(${spinCount * 360}deg)`,
+        }}
       />
-      {imageOverlay !== 'none' && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={getHeroImageOverlayStyle(imageOverlay, imageOverlayColor || bg, imageOverlayOpacity)}
-        />
-      )}
+
+      <div 
+        className="absolute inset-0 w-full h-full flex items-center justify-center transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" 
+        style={{ 
+          transformStyle: 'preserve-3d',
+          transform: `translateZ(-450px) rotateY(${currentAngle}deg)`,
+        }}
+      >
+        {slides.map((slide, index) => {
+          const slideAngle = index * angleStep;
+          const isActive = index === activeIndex;
+          return (
+            <div
+              key={slide.src}
+              className="absolute inset-0 w-full h-full rounded-[1.75rem] overflow-hidden backface-hidden shadow-2xl border border-white/10 flex items-center justify-center p-4"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: `rotateY(${slideAngle}deg) translateZ(450px)`,
+                backgroundColor: `${bg || '#0a0a0f'}dd`,
+                opacity: isActive ? 1 : 0.3,
+                transition: 'opacity 700ms ease-in-out',
+              }}
+            >
+              <img
+                src={slide.src}
+                alt={slide.alt || 'Hero slide'}
+                className={`hero-carousel-image absolute inset-0 h-full w-full ${imageFit === 'contain' ? 'object-contain p-6' : 'object-cover'}`}
+              />
+              {imageOverlay && imageOverlay !== 'none' && (
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={getHeroImageOverlayStyle(imageOverlay, imageOverlayColor || bg, imageOverlayOpacity)}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
       {slides.length > 1 && (
-        <div className="absolute inset-x-4 bottom-4 flex items-center justify-between gap-3">
+        <div className="absolute inset-x-4 bottom-4 z-30 flex items-center justify-between gap-3">
           <div role="group" className="flex items-center gap-1.5" aria-label="Choose featured image">
             {slides.map((slide, index) => (
               <button
@@ -488,7 +539,7 @@ function HeroImageCarousel({
                 aria-label={`Show image ${index + 1} of ${slides.length}`}
                 aria-pressed={index === activeIndex}
                 onClick={() => goTo(index)}
-                className={`h-2.5 rounded-full transition-[width,background-color] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                className={`h-2.5 rounded-full transition-[width,background-color] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer ${
                   index === activeIndex ? 'w-7 bg-white' : 'w-2.5 bg-white/55 hover:bg-white/85'
                 }`}
               />
@@ -499,7 +550,7 @@ function HeroImageCarousel({
               type="button"
               aria-label="Previous featured image"
               onClick={() => goTo(activeIndex - 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white transition-colors hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white transition-colors hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -507,7 +558,7 @@ function HeroImageCarousel({
               type="button"
               aria-label="Next featured image"
               onClick={() => goTo(activeIndex + 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white transition-colors hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white transition-colors hover:bg-black/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -575,7 +626,6 @@ function ServicesSection({
           )}
         </div>
 
-        {/* 3 items in a row grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, i) => {
             const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[service.icon] || Icons.Code;
@@ -623,14 +673,8 @@ function ServiceCard({
       className={`reveal ${visible ? 'is-visible' : ''} relative group rounded-2xl p-[2px] transition-all duration-500 cursor-pointer`}
       style={{ transitionDelay: `${index * 0.08}s` }}
     >
-      {/* Multi-color Rotating Border Background on Hover */}
-      <div 
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-border-rotate"
-      />
-
-      {/* Inner Card Container */}
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-border-rotate" />
       <div className="relative glass rounded-[15px] overflow-hidden flex flex-col justify-end p-8 min-h-[34rem] bg-[#0a0a0f]/90 h-full">
-        {/* Background Image with Zoom Out on Hover */}
         {service.image_url ? (
           <div className="absolute inset-0 w-full h-full overflow-hidden bg-gray-950 z-0">
             <img
@@ -644,8 +688,6 @@ function ServiceCard({
         ) : (
           <div className="absolute inset-0 bg-gray-950/90 z-0" />
         )}
-
-        {/* Content Container */}
         <div className="relative z-10 flex flex-col justify-end h-full">
           <div
             className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center flex-shrink-0 mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg"
@@ -653,15 +695,12 @@ function ServiceCard({
           >
             <Icon className="w-7 h-7" style={{ color: primary }} />
           </div>
-
           <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: hf }}>
             {service.title}
           </h3>
-
           <p className="text-gray-300 leading-relaxed mb-4 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
             {service.description}
           </p>
-
           {service.features?.length > 0 && (
             <div className="grid grid-cols-1 gap-2 max-h-0 opacity-0 group-hover:max-h-40 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
               {service.features.map((f, idx) => (
@@ -672,7 +711,6 @@ function ServiceCard({
               ))}
             </div>
           )}
-
           <span
             className="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all mt-4"
             style={{ color: primary }}
@@ -731,7 +769,6 @@ function ProcessSection({
             </span>
           </h2>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           <div className="hidden lg:block absolute top-10 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           {steps.map((step, i) => (
@@ -762,11 +799,8 @@ function ProcessStep({
     <div
       ref={ref}
       className={`reveal ${visible ? 'is-visible' : ''} group relative text-center glass glass-hover p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden`}
-      style={{
-        transitionDelay: `${index * 0.12}s`,
-      }}
+      style={{ transitionDelay: `${index * 0.12}s` }}
     >
-      {/* Dynamic Glowing Border & Shadow Effect on Hover */}
       <div
         className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
@@ -774,13 +808,10 @@ function ProcessStep({
           border: `1px solid ${primary}60`,
         }}
       />
-
-      {/* Ambient background glow on hover */}
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
         style={{ background: `radial-gradient(circle at center top, ${primary}20, transparent 70%)` }}
       />
-
       <div className="relative inline-flex mb-6 z-10">
         <div
           className="w-20 h-20 rounded-2xl border border-white/10 flex items-center justify-center mx-auto transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg"
@@ -793,15 +824,11 @@ function ProcessStep({
         </div>
         <span
           className="absolute -top-2 -right-2 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center text-white shadow-md transition-transform duration-500 group-hover:scale-125"
-          style={{ 
-            background: primary,
-            boxShadow: `0 0 10px ${primary}`,
-          }}
+          style={{ background: primary, boxShadow: `0 0 10px ${primary}` }}
         >
           {index + 1}
         </span>
       </div>
-      
       <div className="relative z-10">
         <h3 className="text-xl font-bold text-white mb-2 transition-colors duration-300 group-hover:text-transparent group-hover:bg-clip-text" style={{ fontFamily: hf, backgroundImage: `linear-gradient(135deg, ${primary}, ${accent})` }}>
           {step.title}
@@ -852,7 +879,6 @@ function ProjectsShowcase({
   }
   const activeSlide = Math.min(activeIndex, Math.max(slides.length - 1, 0));
 
-  // Auto-slide effect for featured projects
   useEffect(() => {
     if (paused || slides.length <= 1) return;
     const interval = setInterval(() => {
@@ -897,7 +923,7 @@ function ProjectsShowcase({
           <div className="flex items-center gap-5">
             <button
               onClick={() => navigate('/portfolio')}
-              className="font-medium text-sm flex items-center gap-2 group"
+              className="font-medium text-sm flex items-center gap-2 group cursor-pointer"
               style={{ color: primary }}
             >
               View All Projects
@@ -909,7 +935,7 @@ function ProjectsShowcase({
                   type="button"
                   onClick={showPrevious}
                   aria-label="Previous projects"
-                  className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/30 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/35 transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -917,7 +943,7 @@ function ProjectsShowcase({
                   type="button"
                   onClick={showNext}
                   aria-label="Next projects"
-                  className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/30 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/35 transition-colors cursor-pointer"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -930,16 +956,15 @@ function ProjectsShowcase({
           <p className="text-gray-500 text-center py-12">Projects coming soon.</p>
         ) : (
           <div>
-            <div className="overflow-hidden" role="region" aria-live="polite" aria-label="Featured project slides">
+            <div className="overflow-hidden">
               <div
-                className="flex transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+                className="flex transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 style={{ transform: `translateX(-${activeSlide * 100}%)` }}
               >
                 {slides.map((slide, slideIndex) => (
                   <div
                     key={slideIndex}
                     className={`min-w-full grid ${visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-6 px-1 py-2`}
-                    aria-hidden={activeSlide !== slideIndex}
                   >
                     {slide.map((project) => (
                       <ProjectCard
@@ -956,7 +981,7 @@ function ProjectsShowcase({
               </div>
             </div>
             {slides.length > 1 && (
-                <div className="mt-8 flex justify-center gap-2" role="group" aria-label="Choose project slide">
+              <div className="mt-8 flex justify-center gap-2" role="group" aria-label="Choose project slide">
                 {slides.map((_, index) => (
                   <button
                     key={index}
@@ -964,7 +989,7 @@ function ProjectsShowcase({
                     onClick={() => setActiveIndex(index)}
                     aria-label={`Go to project slide ${index + 1}`}
                     aria-current={activeSlide === index ? 'true' : undefined}
-                    className="h-2.5 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    className="h-2.5 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
                     style={{
                       width: activeSlide === index ? '2rem' : '0.625rem',
                       backgroundColor: activeSlide === index ? primary : 'rgba(255,255,255,0.25)',
@@ -1004,7 +1029,14 @@ function ProjectCard({
   const liveUrl = getLiveProjectUrl(project);
 
   return (
-    <article className="group relative w-full overflow-hidden rounded-2xl glass card-tilt">
+    <article className="group relative w-full overflow-hidden rounded-2xl glass card-tilt transition-all duration-500 hover:-translate-y-1.5">
+      <div
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+        style={{
+          boxShadow: `inset 0 0 25px ${primary}25, 0 15px 35px -5px ${primary}35`,
+          border: `1px solid ${primary}50`,
+        }}
+      />
       <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 relative">
         {project.image_url ? (
           <img
@@ -1019,13 +1051,12 @@ function ProjectCard({
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="absolute bottom-4 left-4 right-4 hidden translate-y-2 flex-wrap gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 sm:flex">
+        <div className="absolute bottom-4 left-4 right-4 hidden translate-y-2 flex-wrap gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:flex z-20">
           <button
             type="button"
             onClick={onPreview}
             tabIndex={tabIndex}
-            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-950 hover:bg-gray-200"
-            aria-label={`Preview ${project.title}`}
+            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-950 hover:bg-gray-200 cursor-pointer"
           >
             <Eye className="h-4 w-4" /> Preview project
           </button>
@@ -1035,15 +1066,14 @@ function ProjectCard({
               target="_blank"
               rel="noopener noreferrer"
               tabIndex={tabIndex}
-              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-2 text-sm font-semibold text-white hover:bg-black/70"
-              aria-label={`View ${project.title} live project`}
+              className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/40 px-4 py-2 text-sm font-semibold text-white hover:bg-black/70 cursor-pointer"
             >
               Live project <ExternalLink className="h-4 w-4" />
             </a>
           )}
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-6 relative z-20">
         <span className="text-xs font-medium uppercase tracking-wider" style={{ color: primary }}>
           {project.category}
         </span>
@@ -1051,39 +1081,6 @@ function ProjectCard({
           {project.title}
         </h3>
         <p className="text-sm text-gray-500 line-clamp-2">{project.description}</p>
-        {project.tools_used?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4" aria-label="Tools used">
-            {project.tools_used.map((tool) => (
-              <span key={tool} className="px-2.5 py-1 rounded-full border border-white/10 text-xs text-gray-400">
-                {tool}
-              </span>
-            ))}
-          </div>
-        )}
-        <div className="mt-5 flex flex-wrap gap-3 sm:hidden">
-          <button
-            type="button"
-            onClick={onPreview}
-            tabIndex={tabIndex}
-            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm font-semibold text-white"
-            aria-label={`Preview ${project.title}`}
-          >
-            <Eye className="h-4 w-4" /> Preview project
-          </button>
-          {liveUrl && (
-            <a
-              href={liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              tabIndex={tabIndex}
-              className="inline-flex min-h-10 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold"
-              style={{ color: primary }}
-              aria-label={`View ${project.title} live project`}
-            >
-              Live project <ExternalLink className="h-4 w-4" />
-            </a>
-          )}
-        </div>
       </div>
     </article>
   );
@@ -1109,76 +1106,35 @@ function AboutPreview({
   navigate: (to: string) => void;
 }) {
   const { ref, visible } = useReveal<HTMLDivElement>();
-  const values = [
-    {
-      icon: Target,
-      title: 'Our Mission',
-      text: settings?.about_mission || 'To transform ideas into impactful digital solutions.',
-    },
-    {
-      icon: Eye,
-      title: 'Our Vision',
-      text: 'To be the most trusted digital partner for businesses worldwide, known for innovation and excellence.',
-    },
-    {
-      icon: Heart,
-      title: 'Our Values',
-      text: 'Integrity, creativity, and a relentless commitment to client success drive everything we do.',
-    },
-  ];
-
   return (
     <section className="py-24 relative">
       <div className="w-full px-8 md:px-12 lg:px-20">
-        <div
-          ref={ref}
-          className={`reveal ${visible ? 'is-visible' : ''}`}
-        >
+        <div ref={ref} className={`reveal ${visible ? 'is-visible' : ''}`}>
           <div className={`grid grid-cols-1 ${aboutImage ? 'md:grid-cols-2' : ''} gap-12 items-center`}>
             {aboutImage && (
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
                 <ParallaxImage
                   src={aboutImage}
-                  alt={`[CupidCreativeX Ventures](https://www.instagram.com/CupidCreativeX) team and work`}
+                  alt="[CupidCreativeX Ventures](https://www.instagram.com/CupidCreativeX) team and work"
                   className="absolute inset-0 w-full h-full object-cover object-center"
-                />
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{ background: `linear-gradient(135deg, ${primary}15, transparent 55%, ${accent}20)` }}
                 />
               </div>
             )}
-            <div className={aboutImage ? '' : 'max-w-3xl mx-auto'}>
+            <div>
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6" style={{ fontFamily: hf }}>
                 {settings?.about_title || 'About Us'}
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-8">
-                {settings?.about_text ||
-                  'We are a team of passionate designers, developers, and strategists dedicated to helping businesses thrive in the digital age.'}
+                {settings?.about_text || 'We are a team of passionate designers, developers, and strategists.'}
               </p>
               <button
                 onClick={() => navigate('/about')}
-                className="font-medium text-sm flex items-center gap-2 group"
+                className="font-medium text-sm flex items-center gap-2 group cursor-pointer"
                 style={{ color: primary }}
               >
                 Learn More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            {values.map(({ icon: Icon, title, text }) => (
-              <article key={title} className="glass glass-hover rounded-2xl p-8">
-                <div
-                  className="w-14 h-14 rounded-xl border border-white/10 flex items-center justify-center mb-6"
-                  style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}
-                >
-                  <Icon className="w-7 h-7" style={{ color: primary }} aria-hidden="true" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: hf }}>{title}</h3>
-                <p className="text-gray-400 leading-relaxed">{text}</p>
-              </article>
-            ))}
           </div>
         </div>
       </div>
@@ -1201,36 +1157,34 @@ function TestimonialsCarousel({
   primary: string;
   accent: string;
 }) {
-  const [active, setActive] = useState(0);
+  const { ref, visible } = useReveal<HTMLDivElement>();
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  // Hardcode 3 per slide on desktop (1 on mobile, 2 on tablet, 3 on desktop)
-  const [perSlide, setPerSlide] = useState(3);
 
   useEffect(() => {
-    const updatePerSlide = () => {
-      setPerSlide(window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3);
+    const updateVisibleCount = () => {
+      setVisibleCount(window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3);
     };
-    updatePerSlide();
-    window.addEventListener('resize', updatePerSlide);
-    return () => window.removeEventListener('resize', updatePerSlide);
+    updateVisibleCount();
+    window.addEventListener('resize', updateVisibleCount);
+    return () => window.removeEventListener('resize', updateVisibleCount);
   }, []);
 
   const slides: Testimonial[][] = [];
-  for (let i = 0; i < testimonials.length; i += perSlide) {
-    slides.push(testimonials.slice(i, i + perSlide));
+  for (let i = 0; i < testimonials.length; i += visibleCount) {
+    slides.push(testimonials.slice(i, i + visibleCount));
   }
   const slideCount = slides.length;
-  const activeSlide = Math.min(active, Math.max(slideCount - 1, 0));
+  const activeSlide = Math.min(activeIndex, Math.max(slideCount - 1, 0));
 
-  const next = useCallback(() => setActive((p) => (p + 1) % Math.max(slideCount, 1)), [slideCount]);
-  const prev = useCallback(() => setActive((p) => (p - 1 + slideCount) % Math.max(slideCount, 1)), [slideCount]);
+  const next = useCallback(() => setActiveIndex((p) => (p + 1) % Math.max(slideCount, 1)), [slideCount]);
+  const prev = useCallback(() => setActiveIndex((p) => (p - 1 + slideCount) % Math.max(slideCount, 1)), [slideCount]);
 
   useEffect(() => {
     if (paused || slideCount <= 1) return;
-    const id = setInterval(next, 6000);
-    return () => clearInterval(id);
+    const interval = setInterval(next, 6000);
+    return () => clearInterval(interval);
   }, [paused, next, slideCount]);
 
   if (testimonials.length === 0) return null;
@@ -1238,36 +1192,61 @@ function TestimonialsCarousel({
   return (
     <section className="py-24 relative overflow-hidden">
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-[120px]"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-[120px] pointer-events-none"
         style={{ background: `${primary}15` }}
       />
-      <div className="w-full px-8 md:px-12 lg:px-20 relative">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-4">
-            <Star className="w-4 h-4" style={{ color: primary }} />
-            <span className="text-sm text-gray-400">Client Love</span>
+      <div 
+        className="w-full px-8 md:px-12 lg:px-20 relative"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <div
+          ref={ref}
+          className={`reveal ${visible ? 'is-visible' : ''} flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-4`}
+        >
+          <div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-4">
+              <Star className="w-4 h-4" style={{ color: primary }} />
+              <span className="text-sm text-gray-400">Client Love</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-white" style={{ fontFamily: hf }}>
+              What Our{' '}
+              <span
+                style={{
+                  background: `linear-gradient(135deg, ${primary}, ${accent})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                Clients Say
+              </span>
+            </h2>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: hf }}>
-            What Our{' '}
-            <span
-              style={{
-                background: `linear-gradient(135deg, ${primary}, ${accent})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Clients Say
-            </span>
-          </h2>
+          {slideCount > 1 && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={prev}
+                aria-label="Previous testimonials"
+                className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/35 transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                aria-label="Next testimonials"
+                className="w-10 h-10 rounded-full border border-white/10 text-white flex items-center justify-center hover:border-white/35 transition-colors cursor-pointer"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
 
-        <div
-          className="relative"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          <div ref={trackRef} className="overflow-hidden">
+        <div>
+          <div className="overflow-hidden" role="region" aria-live="polite" aria-label="Client testimonial slides">
             <div
               className="flex transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{ transform: `translateX(-${activeSlide * 100}%)` }}
@@ -1275,14 +1254,14 @@ function TestimonialsCarousel({
               {slides.map((slide, slideIndex) => (
                 <div
                   key={slideIndex}
-                  className={`min-w-full grid ${perSlide === 1 ? 'grid-cols-1' : perSlide === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-6 px-1`}
+                  className={`min-w-full grid ${visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-6 px-1 py-2`}
+                  aria-hidden={activeSlide !== slideIndex}
                 >
                   {slide.map((t) => (
                     <div
                       key={t.id}
                       className="group relative glass rounded-3xl p-8 flex flex-col justify-between h-full transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
                     >
-                      {/* Neon Border & Glow Effect on Hover */}
                       <div
                         className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
                         style={{
@@ -1290,14 +1269,11 @@ function TestimonialsCarousel({
                           border: `1px solid ${primary}50`,
                         }}
                       />
-
-                      {/* Ambient background glow on hover */}
                       <div 
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
                         style={{ background: `radial-gradient(circle at center top, ${accent}15, transparent 75%)` }}
                       />
-
-                      <div className="relative z-25">
+                      <div className="relative z-20">
                         <Quote className="absolute top-0 right-0 w-10 h-10 opacity-10" style={{ color: primary }} />
                         <div className="flex gap-1 mb-4">
                           {Array.from({ length: t.rating }).map((_, i) => (
@@ -1306,8 +1282,7 @@ function TestimonialsCarousel({
                         </div>
                         <p className="text-gray-200 text-base leading-relaxed mb-6">"{t.quote}"</p>
                       </div>
-
-                      <div className="relative z-25 flex items-center gap-4 mt-auto pt-4 border-t border-white/10">
+                      <div className="relative z-20 flex items-center gap-4 mt-auto pt-4 border-t border-white/10">
                         {t.avatar_url ? (
                           <img
                             src={t.avatar_url}
@@ -1336,35 +1311,21 @@ function TestimonialsCarousel({
           </div>
 
           {slideCount > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-10">
-              <button
-                onClick={prev}
-                aria-label="Previous testimonials"
-                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div className="flex gap-2">
-                {slides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActive(i)}
-                    aria-label={`Go to testimonial slide ${i + 1}`}
-                    className="h-2 rounded-full transition-all duration-300 cursor-pointer"
-                    style={{
-                      width: i === activeSlide ? 28 : 8,
-                      background: i === activeSlide ? primary : 'rgba(255,255,255,0.15)',
-                    }}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={next}
-                aria-label="Next testimonials"
-                className="w-11 h-11 rounded-full glass glass-hover flex items-center justify-center text-white transition-transform hover:scale-110 cursor-pointer"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+            <div className="mt-8 flex justify-center gap-2" role="group" aria-label="Choose testimonial slide">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-label={`Go to testimonial slide ${index + 1}`}
+                  aria-current={activeSlide === index ? 'true' : undefined}
+                  className="h-2.5 rounded-full transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer"
+                  style={{
+                    width: activeSlide === index ? '2rem' : '0.625rem',
+                    backgroundColor: activeSlide === index ? primary : 'rgba(255,255,255,0.25)',
+                  }}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -1374,7 +1335,7 @@ function TestimonialsCarousel({
 }
 
 /* ----------------------------------------------------------------- */
-/* CTA                                                                */
+/* CTA Section                                                        */
 /* ----------------------------------------------------------------- */
 
 function CtaSection({
@@ -1396,7 +1357,6 @@ function CtaSection({
           ref={ref}
           className={`reveal ${visible ? 'is-visible' : ''} group relative glass rounded-3xl p-12 md:p-16 text-center overflow-hidden transition-all duration-500 hover:-translate-y-1.5`}
         >
-          {/* Neon Border & Glow Effect on Hover */}
           <div
             className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
             style={{
@@ -1405,7 +1365,6 @@ function CtaSection({
             }}
           />
 
-          {/* Ambient background glow on hover */}
           <div 
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
             style={{ background: `radial-gradient(circle at center, ${accent}15, transparent 75%)` }}
@@ -1416,6 +1375,7 @@ function CtaSection({
             className="absolute bottom-0 right-0 w-64 h-64 rounded-full blur-[80px]"
             style={{ background: `${accent}30` }}
           />
+
           <div className="relative z-20">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: hf }}>
               Ready to Build Something{' '}
@@ -1431,35 +1391,25 @@ function CtaSection({
               </span>
             </h2>
             <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-              Let's turn your vision into reality. Our team is ready to help you create digital experiences that stand
-              out.
+              Let's turn your vision into reality. Our team is ready to help you create digital experiences that stand out.
             </p>
-            
-            {/* Animated Button with Rotating Multi-color Border & Zoom-out */}
-            <div className="relative inline-block group/btn rounded-xl p-[2px]">
-              {/* Multi-color Rotating Border Background on Hover */}
-              <div 
-                className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
-              />
-              <button
-                onClick={() => navigate('/contact')}
-                className="relative z-10 px-8 py-4 font-semibold text-white bg-[#f97316] hover:bg-transparent rounded-[10px] transition-all duration-500 inline-flex items-center gap-2 cursor-pointer group-hover/btn:scale-95 shadow-lg"
-                style={{ 
-                  boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)',
-                }}
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Get in Touch
-                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                </span>
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/contact')}
+              className="px-8 py-4 font-semibold text-white bg-[#f97316] rounded-xl hover:bg-transparent transition-all duration-300 cursor-pointer shadow-lg"
+              style={{ boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)' }}
+            >
+              Get in Touch
+            </button>
           </div>
         </div>
       </div>
     </section>
   );
 }
+
+/* ----------------------------------------------------------------- */
+/* Contact & Testimonial Review Form Section                        */
+/* ----------------------------------------------------------------- */
 
 function HomeContactSection({
   hf,
@@ -1472,13 +1422,26 @@ function HomeContactSection({
   accent: string;
   settings: ReturnType<typeof useTheme>['settings'];
 }) {
-  const [form, setForm] = useState({
+  const [formType, setFormType] = useState<'contact' | 'review'>('contact');
+  
+  // Contact Form State
+  const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
     subject: 'Project inquiry',
     message: '',
   });
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  // Review Form State
+  const [reviewForm, setReviewForm] = useState({
+    client_name: '',
+    company: '',
+    quote: '',
+    rating: 5,
+  });
+  const [reviewStatus, setReviewStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
   const contactDetails: { icon: typeof Mail; label: string; value: string; href: string | null }[] = [];
   const email = settings?.contact_email?.trim();
   const phone = settings?.contact_phone?.trim();
@@ -1486,50 +1449,80 @@ function HomeContactSection({
 
   if (email) contactDetails.push({ icon: Mail, label: 'Email', value: email, href: `mailto:${email}` });
   if (phone) {
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
     contactDetails.push({
       icon: Phone,
       label: 'Phone',
       value: phone,
-      href: `tel:${phone.replace(/[^\d+]/g, '')}`,
+      href: `tel:${cleanPhone}`,
+    });
+    // WhatsApp Contact Item
+    contactDetails.push({
+      icon: MessageSquare,
+      label: 'WhatsApp',
+      value: phone,
+      href: `https://wa.me/${cleanPhone.replace('+', '')}`,
     });
   }
   if (address) contactDetails.push({ icon: MapPin, label: 'Address', value: address, href: null });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setStatus('sending');
-    const { error } = await supabase.from('contact_messages').insert(form);
+    setContactStatus('sending');
+    const { error } = await supabase.from('contact_messages').insert(contactForm);
 
     if (error) {
-      console.error('Failed to send homepage contact message:', error);
-      setStatus('error');
+      console.error('Failed to send contact message:', error);
+      setContactStatus('error');
       return;
     }
 
-    setForm({ name: '', email: '', subject: 'Project inquiry', message: '' });
-    setStatus('sent');
+    setContactForm({ name: '', email: '', subject: 'Project inquiry', message: '' });
+    setContactStatus('sent');
+  };
+
+  const handleReviewSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setReviewStatus('sending');
+    const { error } = await supabase.from('testimonials').insert({
+      client_name: reviewForm.client_name,
+      company: reviewForm.company,
+      quote: reviewForm.quote,
+      rating: reviewForm.rating,
+      published: true,
+      sort_order: 99,
+    });
+
+    if (error) {
+      console.error('Failed to submit review:', error);
+      setReviewStatus('error');
+      return;
+    }
+
+    setReviewForm({ client_name: '', company: '', quote: '', rating: 5 });
+    setReviewStatus('sent');
   };
 
   return (
     <section className="py-24 relative" aria-labelledby="home-contact-heading">
       <div className="w-full px-8 md:px-12 lg:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-12 items-start">
+          
+          {/* Left Info Column */}
           <div className="flex flex-col gap-6">
             <div>
               <h2 id="home-contact-heading" className="text-4xl md:text-5xl font-bold text-white mb-5" style={{ fontFamily: hf }}>
-                Contact Us
+                {formType === 'contact' ? 'Contact Us' : 'Leave a Review'}
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
-                Have a project in mind or feedback to share? Send us a message and our team will be in touch.
-              </p>
-              <p className="text-sm text-gray-500 mt-3">
-                Reviews and comments are sent privately to our team.
+                {formType === 'contact'
+                  ? "Have a project in mind or feedback to share? Send us a message and our team will be in touch."
+                  : "Loved working with us? Share your experience and get featured on our client testimonials wall!"}
               </p>
             </div>
 
             {contactDetails.length > 0 && (
-              <address className="group relative glass rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1.5 not-italic overflow-hidden cursor-pointer">
-                {/* Neon Border & Glow Effect on Hover */}
+              <address className="group relative glass rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1.5 not-italic overflow-hidden">
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
@@ -1537,13 +1530,6 @@ function HomeContactSection({
                     border: `1px solid ${primary}60`,
                   }}
                 />
-
-                {/* Ambient background glow on hover */}
-                <div 
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
-                  style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
-                />
-
                 <div className="relative z-10">
                   <h3 className="text-sm font-semibold mb-5 tracking-wide uppercase" style={{ color: primary }}>
                     Company Contact Details
@@ -1560,8 +1546,13 @@ function HomeContactSection({
                         <div className="min-w-0 pt-1">
                           <span className="block text-xs text-gray-400">{label}</span>
                           {href ? (
-                            <a href={href} className="break-words text-gray-200 font-medium transition-colors hover:text-white">
-                              {value}
+                            <a
+                              href={href}
+                              target={label === 'WhatsApp' ? '_blank' : undefined}
+                              rel={label === 'WhatsApp' ? 'noopener noreferrer' : undefined}
+                              className="break-words text-gray-200 font-medium transition-colors hover:text-white"
+                            >
+                              {value} {label === 'WhatsApp' && <span className="text-xs text-green-400 ml-1">(Chat)</span>}
                             </a>
                           ) : (
                             <span className="text-gray-200 font-medium">{value}</span>
@@ -1573,117 +1564,170 @@ function HomeContactSection({
                 </div>
               </address>
             )}
-
             <SocialLinks className="mt-2" />
           </div>
 
-          <form 
-            onSubmit={handleSubmit} 
-            className="group relative glass rounded-2xl p-6 md:p-8 space-y-5 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
-          >
-            {/* Form Card Neon Border & Glow Effect on Hover */}
-            <div
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              style={{
-                boxShadow: `inset 0 0 25px ${primary}25, 0 15px 35px -5px ${primary}35`,
-                border: `1px solid ${primary}50`,
-              }}
-            />
+          {/* Right Column: Toggle + Forms */}
+          <div className="group relative glass rounded-2xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden">
+            
+            {/* Form Type Switcher Toggle */}
+            <div className="relative z-10 flex p-1.5 bg-black/40 rounded-xl border border-white/10 mb-6">
+              <button
+                type="button"
+                onClick={() => setFormType('contact')}
+                className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  formType === 'contact' ? 'text-white shadow-lg' : 'text-gray-400 hover:text-white'
+                }`}
+                style={{ background: formType === 'contact' ? `linear-gradient(135deg, ${primary}, ${accent})` : 'transparent' }}
+              >
+                <MessageSquare className="w-4 h-4" /> Send Message
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormType('review')}
+                className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  formType === 'review' ? 'text-white shadow-lg' : 'text-gray-400 hover:text-white'
+                }`}
+                style={{ background: formType === 'review' ? `linear-gradient(135deg, ${primary}, ${accent})` : 'transparent' }}
+              >
+                <Star className="w-4 h-4" /> Submit Review
+              </button>
+            </div>
 
-            {/* Ambient background glow on hover */}
-            <div 
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
-              style={{ background: `radial-gradient(circle at center top, ${accent}15, transparent 75%)` }}
-            />
-
-            <div className="relative z-10 space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="home-contact-name" className="block text-sm text-gray-400 mb-2">Name</label>
-                  <input
-                    id="home-contact-name"
-                    type="text"
-                    autoComplete="name"
-                    required
-                    value={form.name}
-                    onChange={(event) => setForm({ ...form, name: event.target.value })}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
-                    style={{ outlineColor: primary }}
-                    placeholder="Your name"
-                  />
+            {/* Contact Form */}
+            {formType === 'contact' ? (
+              <form onSubmit={handleContactSubmit} className="relative z-10 space-y-5 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="home-contact-name" className="block text-sm text-gray-400 mb-2">Name</label>
+                    <input
+                      id="home-contact-name"
+                      type="text"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                      style={{ outlineColor: primary }}
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="home-contact-email" className="block text-sm text-gray-400 mb-2">Email</label>
+                    <input
+                      id="home-contact-email"
+                      type="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                      style={{ outlineColor: primary }}
+                      placeholder="you@example.com"
+                    />
+                  </div>
                 </div>
                 <div>
-                  <label htmlFor="home-contact-email" className="block text-sm text-gray-400 mb-2">Email</label>
-                  <input
-                    id="home-contact-email"
-                    type="email"
-                    autoComplete="email"
+                  <label htmlFor="home-contact-message" className="block text-sm text-gray-400 mb-2">Message</label>
+                  <textarea
+                    id="home-contact-message"
                     required
-                    value={form.email}
-                    onChange={(event) => setForm({ ...form, email: event.target.value })}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
+                    rows={5}
+                    value={contactForm.message}
+                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
                     style={{ outlineColor: primary }}
-                    placeholder="you@example.com"
+                    placeholder="Write your message..."
                   />
                 </div>
-              </div>
-              <div>
-                <label htmlFor="home-contact-subject" className="block text-sm text-gray-400 mb-2">What would you like to share?</label>
-                <select
-                  id="home-contact-subject"
-                  value={form.subject}
-                  onChange={(event) => setForm({ ...form, subject: event.target.value })}
-                  className="w-full px-4 py-3 bg-gray-950 border border-white/10 rounded-xl text-white focus:outline-none focus-visible:ring-2 transition-all duration-300 hover:border-white/30"
-                  style={{ outlineColor: primary }}
-                >
-                  <option value="Project inquiry">Project inquiry</option>
-                  <option value="General question">General question</option>
-                  <option value="Review or comment">Review or comment</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="home-contact-message" className="block text-sm text-gray-400 mb-2">Message</label>
-                <textarea
-                  id="home-contact-message"
-                  required
-                  rows={5}
-                  value={form.message}
-                  onChange={(event) => setForm({ ...form, message: event.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2 resize-y transition-all duration-300 hover:border-white/30"
-                  style={{ outlineColor: primary }}
-                  placeholder="Write your message, review, or comment..."
-                />
-              </div>
-
-              {/* Animated Submit Button with Rotating Multi-color Border & Zoom-out */}
-              <div className="relative group/btn rounded-xl p-[2px]">
-                {/* Multi-color Rotating Border Background on Hover */}
-                <div 
-                  className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
-                />
                 <button
                   type="submit"
-                  disabled={status === 'sending'}
-                  className="relative z-10 w-full px-6 py-4 font-semibold text-white bg-[#f97316] hover:bg-transparent rounded-[10px] transition-all duration-500 flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white cursor-pointer group-hover/btn:scale-95 shadow-lg"
-                  style={{ boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)' }}
+                  disabled={contactStatus === 'sending'}
+                  className="w-full px-6 py-4 font-semibold text-white rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {status === 'sending' ? 'Sending...' : status === 'sent' ? 'Message sent' : 'Send message'}
-                    {status === 'sent' ? <Check className="w-4 h-4" /> : <Send className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" />}
-                  </span>
+                  {contactStatus === 'sending' ? 'Sending...' : contactStatus === 'sent' ? 'Message sent' : 'Send message'}
+                  <Send className="w-4 h-4" />
                 </button>
-              </div>
+                {contactStatus === 'sent' && <p className="text-green-400 text-sm text-center">Message sent successfully!</p>}
+              </form>
+            ) : (
+              /* Testimonial Review Form */
+              <form onSubmit={handleReviewSubmit} className="relative z-10 space-y-5 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="review-name" className="block text-sm text-gray-400 mb-2">Your Name</label>
+                    <input
+                      id="review-name"
+                      type="text"
+                      required
+                      value={reviewForm.client_name}
+                      onChange={(e) => setReviewForm({ ...reviewForm, client_name: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                      style={{ outlineColor: primary }}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="review-company" className="block text-sm text-gray-400 mb-2">Company / Title</label>
+                    <input
+                      id="review-company"
+                      type="text"
+                      value={reviewForm.company}
+                      onChange={(e) => setReviewForm({ ...reviewForm, company: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                      style={{ outlineColor: primary }}
+                      placeholder="Acme Inc."
+                    />
+                  </div>
+                </div>
 
-              <div aria-live="polite">
-                {status === 'error' && (
-                  <p className="text-red-400 text-sm">Your message could not be sent. Please try again.</p>
-                )}
-                {status === 'sent' && (
-                  <p className="text-green-400 text-sm">Thanks for reaching out. Your message has been received.</p>
-                )}
-              </div>
-            </div>
-          </form>
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">Rating</label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        className="p-1 cursor-pointer focus:outline-none"
+                      >
+                        <Star
+                          className="w-6 h-6 transition-colors"
+                          style={{ color: star <= reviewForm.rating ? primary : 'rgba(255,255,255,0.2)' }}
+                          fill={star <= reviewForm.rating ? 'currentColor' : 'none'}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="review-quote" className="block text-sm text-gray-400 mb-2">Your Review</label>
+                  <textarea
+                    id="review-quote"
+                    required
+                    rows={4}
+                    value={reviewForm.quote}
+                    onChange={(e) => setReviewForm({ ...reviewForm, quote: e.target.value })}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus-visible:ring-2"
+                    style={{ outlineColor: primary }}
+                    placeholder="Describe your experience working with us..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={reviewStatus === 'sending'}
+                  className="w-full px-6 py-4 font-semibold text-white rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+                  style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
+                >
+                  {reviewStatus === 'sending' ? 'Submitting...' : reviewStatus === 'sent' ? 'Review Submitted!' : 'Submit Review'}
+                  <Star className="w-4 h-4" />
+                </button>
+                {reviewStatus === 'sent' && <p className="text-green-400 text-sm text-center">Thank you for your feedback!</p>}
+              </form>
+            )}
+          </div>
+
         </div>
       </div>
     </section>
