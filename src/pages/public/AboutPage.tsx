@@ -61,23 +61,44 @@ export default function AboutPage() {
           })}
         </div>
 
-        <div className="glass rounded-3xl p-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <div key={i} className="text-center">
-                  <div className="w-14 h-14 rounded-xl border border-white/10 flex items-center justify-center mx-auto mb-4" style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}>
-                    <Icon className="w-7 h-7" style={{ color: primary }} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, i) => {
+            const Icon = stat.icon;
+            return (
+              <div 
+                key={i} 
+                className="group relative glass rounded-2xl p-8 text-center transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
+              >
+                {/* Neon Border & Glow Effect on Hover */}
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+                  style={{
+                    boxShadow: `inset 0 0 20px ${primary}30, 0 10px 30px -5px ${primary}40`,
+                    border: `1px solid ${primary}60`,
+                  }}
+                />
+
+                {/* Ambient background glow on hover */}
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
+                  style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
+                />
+
+                <div className="relative z-20">
+                  <div 
+                    className="w-16 h-16 rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110 shadow-md" 
+                    style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
+                  >
+                    <Icon className="w-8 h-8" style={{ color: primary }} />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-1" style={{ fontFamily: hf }}>
+                  <div className="text-4xl font-bold text-white mb-1 tabular-nums" style={{ fontFamily: hf }}>
                     {stat.value}+
                   </div>
-                  <div className="text-sm text-gray-500">{stat.label}</div>
+                  <div className="text-sm text-gray-400">{stat.label}</div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -231,7 +231,7 @@ function Hero({
         style={{ background: `${accent}30`, animationDelay: '1s' }}
       />
 
-      <div className={`relative w-full px-8 md:px-12 lg:px-20 pt-32 pb-12 lg:pb-40 ${heroSlides.length ? '' : 'min-h-screen flex items-center'}`}>
+      <div className={`relative w-full px-8 md:px-12 lg:px-20 pt-32 pb-12 lg:pb-48 ${heroSlides.length ? '' : 'min-h-screen flex items-center'}`}>
         <div className={`grid grid-cols-1 ${heroSlides.length ? 'lg:grid-cols-[1.05fr_0.95fr]' : ''} gap-12 items-center`}>
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 glass rounded-full mb-6 animate-fade-up">
@@ -309,7 +309,7 @@ function Hero({
       </div>
 
       <div className="relative w-full border-t border-white/5 glass lg:absolute lg:bottom-0 lg:left-0 lg:right-0">
-        <div className="w-full px-8 md:px-12 lg:px-20 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="w-full px-8 md:px-12 lg:px-20 py-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <StatCounter
               key={i}
@@ -349,21 +349,41 @@ function StatCounter({
   const count = useCountUp(value, 1800, visible);
 
   return (
-    <div ref={ref} className="flex items-center gap-4">
+    <div
+      ref={ref}
+      className={`reveal ${visible ? 'is-visible' : ''} group relative glass rounded-2xl p-6 flex items-center gap-4 transition-all duration-500 hover:-translate-y-1.5 overflow-hidden`}
+    >
+      {/* Neon Border & Glow Effect on Hover */}
       <div
-        className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0"
-        style={{ background: `linear-gradient(135deg, ${primary}20, ${accent}10)` }}
-      >
-        <Icon className={`w-6 h-6 ${visible ? 'counter-icon-enter' : ''}`} style={{ color: primary }} />
-      </div>
-      <div>
+        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+        style={{
+          boxShadow: `inset 0 0 20px ${primary}30, 0 10px 30px -5px ${primary}40`,
+          border: `1px solid ${primary}60`,
+        }}
+      />
+
+      {/* Ambient background glow on hover */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
+        style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
+      />
+
+      <div className="relative z-20 flex items-center gap-4 w-full">
         <div
-          className={`text-3xl font-bold text-white tabular-nums ${visible ? 'counter-value-enter' : ''}`}
-          style={{ fontFamily: hf }}
+          className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-md"
+          style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
         >
-          {count}{suffix}
+          <Icon className={`w-6 h-6 ${visible ? 'counter-icon-enter' : ''}`} style={{ color: primary }} />
         </div>
-        <div className="text-sm text-gray-500">{label}</div>
+        <div className="min-w-0">
+          <div
+            className={`text-3xl font-bold text-white tabular-nums ${visible ? 'counter-value-enter' : ''}`}
+            style={{ fontFamily: hf }}
+          >
+            {count}{suffix}
+          </div>
+          <div className="text-sm text-gray-400">{label}</div>
+        </div>
       </div>
     </div>
   );
@@ -1119,7 +1139,7 @@ function AboutPreview({
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
                 <ParallaxImage
                   src={aboutImage}
-                  alt={`[CupidCreativeX Ventures](${'https://www.instagram.com/CupidCreativeX'}) team and work`}
+                  alt={`[CupidCreativeX Ventures](https://www.instagram.com/CupidCreativeX) team and work`}
                   className="absolute inset-0 w-full h-full object-cover object-center"
                 />
                 <div
@@ -1330,14 +1350,29 @@ function CtaSection({
       <div className="max-w-4xl mx-auto px-6">
         <div
           ref={ref}
-          className={`reveal ${visible ? 'is-visible' : ''} relative glass rounded-3xl p-12 md:p-16 text-center overflow-hidden`}
+          className={`reveal ${visible ? 'is-visible' : ''} group relative glass rounded-3xl p-12 md:p-16 text-center overflow-hidden transition-all duration-500 hover:-translate-y-1.5`}
         >
+          {/* Neon Border & Glow Effect on Hover */}
+          <div
+            className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10"
+            style={{
+              boxShadow: `inset 0 0 30px ${primary}25, 0 20px 40px -10px ${primary}35`,
+              border: `1px solid ${primary}50`,
+            }}
+          />
+
+          {/* Ambient background glow on hover */}
+          <div 
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" 
+            style={{ background: `radial-gradient(circle at center, ${accent}15, transparent 75%)` }}
+          />
+
           <div className="absolute top-0 left-0 w-64 h-64 rounded-full blur-[80px]" style={{ background: `${primary}30` }} />
           <div
             className="absolute bottom-0 right-0 w-64 h-64 rounded-full blur-[80px]"
             style={{ background: `${accent}30` }}
           />
-          <div className="relative">
+          <div className="relative z-20">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4" style={{ fontFamily: hf }}>
               Ready to Build Something{' '}
               <span
@@ -1355,17 +1390,26 @@ function CtaSection({
               Let's turn your vision into reality. Our team is ready to help you create digital experiences that stand
               out.
             </p>
-            <button
-              onClick={() => navigate('/contact')}
-              className="group relative px-8 py-4 text-white font-semibold rounded-xl transition-all inline-flex items-center gap-2 overflow-hidden animate-gradient-x"
-              style={{ background: `linear-gradient(110deg, ${primary}, ${accent}, ${primary})` }}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Get in Touch
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <span className="absolute inset-0 animate-shimmer" />
-            </button>
+            
+            {/* Animated Button with Rotating Multi-color Border & Zoom-out */}
+            <div className="relative inline-block group/btn rounded-xl p-[2px]">
+              {/* Multi-color Rotating Border Background on Hover */}
+              <div 
+                className="absolute inset-0 rounded-xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500 animate-border-rotate pointer-events-none"
+              />
+              <button
+                onClick={() => navigate('/contact')}
+                className="relative z-10 px-8 py-4 font-semibold text-white bg-[#f97316] hover:bg-transparent rounded-[10px] transition-all duration-500 inline-flex items-center gap-2 cursor-pointer group-hover/btn:scale-95 shadow-lg"
+                style={{ 
+                  boxShadow: '0 10px 25px -5px rgba(249, 115, 22, 0.4)',
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Get in Touch
+                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
