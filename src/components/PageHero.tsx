@@ -1,17 +1,12 @@
-import { useTheme } from '@/lib/theme';
-import { usePageContent } from '@/lib/pageContent';
-import { getHeroImageOverlayStyle } from '@/lib/heroImage';
+import { useTheme } from '../lib/theme';
+import { usePageContent } from '../lib/pageContent';
+import { getHeroImageOverlayStyle } from '../lib/heroImage';
 
 export function PageHero({
   pageKey,
   defaultTitle,
   defaultSubtitle,
   gradientWord,
-}: {
-  pageKey: string;
-  defaultTitle: string;
-  defaultSubtitle?: string;
-  gradientWord?: string;
 }) {
   const { settings } = useTheme();
   const { content, loading } = usePageContent(pageKey);
@@ -62,7 +57,7 @@ export function PageHero({
   };
 
   return (
-    <section className="relative py-28 md:py-32 overflow-hidden" style={{ backgroundColor: bg }}>
+    <section className="relative py-28 md:py-32 overflow-hidden" style={{ backgroundColor: 'transparent' }}>
       <div className="absolute inset-0 bg-grid opacity-40" />
       <div className="absolute top-0 left-1/4 w-72 h-72 rounded-full blur-[100px] animate-pulse-slow" style={{ background: `${primary}20` }} />
       <div className="absolute top-10 right-1/4 w-72 h-72 rounded-full blur-[100px] animate-pulse-slow" style={{ background: `${accent}20` }} />
@@ -87,6 +82,22 @@ export function PageHero({
                   {subtitle}
                 </p>
               )}
+
+              {/* Action Button with Solid Color & Sliding Effect */}
+              <div className={`mt-8 ${heroImage ? '' : 'flex justify-center'}`}>
+                <a 
+                  href="#contact" 
+                  className="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white bg-indigo-600 rounded-xl overflow-hidden group shadow-lg"
+                >
+                  <span className="absolute inset-0 w-full h-full bg-indigo-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+                  <span className="relative flex items-center gap-2">
+                    Start Your Project
+                    <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                  </span>
+                </a>
+              </div>
             </>
           )}
         </div>

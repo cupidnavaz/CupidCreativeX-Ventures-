@@ -110,7 +110,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div style={{ backgroundColor: bg }}>
+    <div style={{ backgroundColor: 'transparent' }}>
       <Hero
         settings={settings}
         hf={hf}
@@ -220,7 +220,7 @@ function Hero({
   navigate: (to: string) => void;
 }) {
   return (
-    <section className="relative min-h-screen flex flex-col items-center overflow-hidden lg:flex-row">
+    <section className="relative min-h-screen flex flex-col items-center overflow-hidden lg:flex-row bg-transparent">
       <div className="absolute inset-0 bg-grid opacity-40" />
       <div
         className="absolute top-1/4 -left-32 w-[28rem] h-[28rem] rounded-full blur-[120px] animate-pulse-slow"
@@ -258,23 +258,31 @@ function Hero({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+              {/* Start Your Project Button: Solid range color -> Transparent on hover */}
               <button
+                type="button"
                 onClick={() => navigate('/contact')}
-                className="group relative px-8 py-4 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 overflow-hidden animate-gradient-x"
-                style={{ background: `linear-gradient(110deg, ${primary}, ${accent}, ${primary})` }}
+                className="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white rounded-xl transition-all duration-300 group shadow-lg cursor-pointer hover:bg-transparent"
+                style={{ 
+                  background: `linear-gradient(110deg, ${primary}, ${accent})`,
+                  boxShadow: `0 10px 25px -5px ${primary}40`
+                }}
               >
+                <span className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-white/30 transition-colors duration-300 pointer-events-none" />
                 <span className="relative z-10 flex items-center gap-2">
                   Start Your Project
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <span className="absolute inset-0 animate-shimmer" />
               </button>
+
+              {/* View Our Work Button: Turns orange on hover */}
               <button
+                type="button"
                 onClick={() => navigate('/portfolio')}
-                className="px-8 py-4 glass glass-hover text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+                className="px-8 py-4 glass glass-hover text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group hover:border-[#f97316] hover:text-[#f97316]"
               >
                 View Our Work
-                <ArrowUpRight className="w-5 h-5" />
+                <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
             </div>
             <SocialLinks className="mt-8 animate-fade-up" />

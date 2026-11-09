@@ -69,7 +69,7 @@ export function SocialLinks({ className = '' }: { className?: string }) {
               rel="noopener noreferrer"
               aria-label={link.platform}
               title={link.platform}
-              className="w-10 h-10 rounded-full border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="w-10 h-10 rounded-full border border-white/10 text-gray-400 hover:text-[#f97316] hover:border-[#f97316]/50 flex items-center justify-center transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f97316]"
             >
               <Icon className="w-4 h-4" aria-hidden="true" />
             </a>

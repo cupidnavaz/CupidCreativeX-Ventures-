@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, type SocialLink } from '@/lib/supabase';
+import { useTheme } from '@/lib/theme';
 import { Plus, Edit2, Trash2, X, Save, Share2, ExternalLink } from 'lucide-react';
 
 const PLATFORM_OPTIONS = [
@@ -19,6 +20,11 @@ export default function AdminSocial() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<SocialLink | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const { settings } = useTheme();
+
+  const primary = settings?.color_primary || '#f97316';
+  const headingFont = settings?.font_heading || 'Space Grotesk';
+  const hf = `'${headingFont}', sans-serif`;
 
   useEffect(() => { load(); }, []);
 
@@ -54,17 +60,20 @@ export default function AdminSocial() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Social Links</h2>
+        <h2 className="text-2xl font-bold text-white" style={{ fontFamily: hf }}>Social Links</h2>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm font-semibold rounded-lg flex items-center gap-2"
+          className="px-4 py-2 text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-all duration-300 hover:opacity-90 shadow-lg"
+          style={{ background: primary }}
         >
           <Plus className="w-4 h-4" /> Add Social Link
         </button>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" /></div>
+        <div className="flex justify-center py-12">
+          <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: primary, borderTopColor: 'transparent' }} />
+        </div>
       ) : items.length === 0 ? (
         <div className="glass rounded-xl p-12 text-center">
           <Share2 className="w-12 h-12 text-gray-600 mx-auto mb-3" />
@@ -83,18 +92,32 @@ export default function AdminSocial() {
                     <span className="text-xs text-gray-600">Order: {item.sort_order}</span>
                   </div>
                   <h3 className="text-lg font-bold text-white mb-1">{item.platform}</h3>
-                  <a href={item.url} target="_blank" rel="noreferrer" className="text-sm text-gray-400 hover:text-orange-400 flex items-center gap-1">
+                  <a 
+                    href={item.url} 
+                    target="_blank" 
+                    rel="noreferrer" 
+                    className="text-sm text-gray-400 hover:text-[#f97316] transition-colors flex items-center gap-1"
+                  >
                     {item.url} <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <button onClick={() => handleToggle(item)} className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-green-400 text-xs">
+                  <button 
+                    onClick={() => handleToggle(item)} 
+                    className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-green-400 text-xs transition-colors"
+                  >
                     {item.published ? 'Hide' : 'Show'}
                   </button>
-                  <button onClick={() => { setEditing(item); setShowForm(true); }} className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-orange-400">
+                  <button 
+                    onClick={() => { setEditing(item); setShowForm(true); }} 
+                    className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-[#f97316] transition-colors"
+                  >
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(item.id)} className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-red-400">
+                  <button 
+                    onClick={() => handleDelete(item.id)} 
+                    className="p-2 glass glass-hover rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -109,13 +132,15 @@ export default function AdminSocial() {
           initial={editing}
           onSave={handleSave}
           onClose={() => { setShowForm(false); setEditing(null); }}
+          primary={primary}
+          hf={hf}
         />
       )}
     </div>
   );
 }
 
-function SocialForm({ initial, onSave, onClose }: { initial: SocialLink | null; onSave: (data: Partial<SocialLink>) => void; onClose: () => void }) {
+function SocialForm({ initial, onSave, onClose, primary, hf }: { initial: SocialLink | null; onSave: (data: Partial<SocialLink>) => void; onClose: () => void; primary: string; hf: string }) {
   const [platform, setPlatform] = useState(initial?.platform || 'Twitter');
   const [url, setUrl] = useState(initial?.url || '');
   const [icon, setIcon] = useState(initial?.icon || 'Twitter');
@@ -136,42 +161,77 @@ function SocialForm({ initial, onSave, onClose }: { initial: SocialLink | null; 
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="glass rounded-2xl p-8 w-full max-w-md my-8">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white">{initial ? 'Edit Social Link' : 'Add Social Link'}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <h3 className="text-xl font-bold text-white" style={{ fontFamily: hf }}>{initial ? 'Edit Social Link' : 'Add Social Link'}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-[#f97316] transition-colors"><X className="w-5 h-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm text-gray-400 mb-1">Platform</label>
-            <select value={platform} onChange={(e) => handlePlatformChange(e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
+            <select 
+              value={platform} 
+              onChange={(e) => handlePlatformChange(e.target.value)} 
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#f97316]"
+            >
               {PLATFORM_OPTIONS.map((p) => <option key={p} value={p} className="bg-gray-900">{p}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-1">URL</label>
-            <input type="url" required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" />
+            <input 
+              type="url" 
+              required 
+              value={url} 
+              onChange={(e) => setUrl(e.target.value)} 
+              placeholder="https://..." 
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#f97316]" 
+            />
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-1">Icon Name</label>
-            <input type="text" value={icon} onChange={(e) => setIcon(e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" />
+            <input 
+              type="text" 
+              value={icon} 
+              onChange={(e) => setIcon(e.target.value)} 
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#f97316]" 
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Sort Order</label>
-              <input type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" />
+              <input 
+                type="number" 
+                value={sortOrder} 
+                onChange={(e) => setSortOrder(Number(e.target.value))} 
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#f97316]" 
+              />
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Published</label>
-              <select value={published ? 'true' : 'false'} onChange={(e) => setPublished(e.target.value === 'true')} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
+              <select 
+                value={published ? 'true' : 'false'} 
+                onChange={(e) => setPublished(e.target.value === 'true')} 
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#f97316]"
+              >
                 <option value="true" className="bg-gray-900">Yes</option>
                 <option value="false" className="bg-gray-900">No</option>
               </select>
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" className="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg flex items-center justify-center gap-2">
+            <button 
+              type="submit" 
+              className="flex-1 px-4 py-2.5 text-white font-semibold rounded-lg flex items-center justify-center gap-2 transition-all duration-300 hover:opacity-90 shadow-lg"
+              style={{ background: primary }}
+            >
               <Save className="w-4 h-4" /> Save
             </button>
-            <button type="button" onClick={onClose} className="px-4 py-2.5 glass text-gray-300 font-semibold rounded-lg">Cancel</button>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="px-4 py-2.5 glass text-gray-300 hover:text-white font-semibold rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
           </div>
         </form>
       </div>
