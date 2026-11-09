@@ -262,10 +262,10 @@ function Hero({
               <button
                 type="button"
                 onClick={() => navigate('/contact')}
-                className="relative inline-flex items-center justify-center px-8 py-4 font-semibold text-white rounded-xl transition-all duration-300 group shadow-lg cursor-pointer hover:bg-transparent"
+                className="relative inline-flex items-center justify-center px-8 py-4 font-semibold bg-[#f97316] text-white rounded-xl transition-all duration-300 group shadow-lg cursor-pointer hover:bg-transparent"
                 style={{ 
                   background: `linear-gradient(110deg, ${primary}, ${accent})`,
-                  boxShadow: `0 10px 25px -5px ${primary}40`
+                 boxShadow: '0 10px 20px -5px rgba(249, 115, 22, 0.4)'
                 }}
               >
                 <span className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-white/30 transition-colors duration-300 pointer-events-none" />
@@ -476,7 +476,7 @@ function HeroImageCarousel({
       style={{ 
         height: '100%',
         perspective: '1500px',
-        background: `radial-gradient(circle at center, ${primary || '#f97316'}15, ${bg || '#0a0a0f'} 85%)`,
+        background: 'transparent',
       }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={(event) => setPaused(event.currentTarget.contains(document.activeElement))}
@@ -484,10 +484,9 @@ function HeroImageCarousel({
       onBlurCapture={(event) => setPaused(event.currentTarget.matches(':hover'))}
     >
       <div 
-        className="absolute inset-0 opacity-40 pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className="absolute inset-0 opacity-20 pointer-events-none transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
-          background: `conic-gradient(from ${spinCount * 360}deg at 50% 50%, ${primary || '#f97316'}40, ${accent || '#06b6d4'}40, #8b5cf640, ${primary || '#f97316'}40)`,
-          transform: `rotate(${spinCount * 360}deg)`,
+          background: `radial-gradient(circle at center, ${primary || '#f97316'}20, transparent 70%)`,
         }}
       />
 
@@ -504,11 +503,10 @@ function HeroImageCarousel({
           return (
             <div
               key={slide.src}
-              className="absolute inset-0 w-full h-full rounded-[1.75rem] overflow-hidden backface-hidden shadow-2xl border border-white/10 flex items-center justify-center p-4"
+              className="absolute inset-0 w-full h-full rounded-[1.75rem] overflow-hidden backface-hidden shadow-2xl border border-white/10 flex items-center justify-center bg-black/40 backdrop-blur-md"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: `rotateY(${slideAngle}deg) translateZ(450px)`,
-                backgroundColor: `${bg || '#0a0a0f'}dd`,
                 opacity: isActive ? 1 : 0.3,
                 transition: 'opacity 700ms ease-in-out',
               }}
@@ -516,11 +514,11 @@ function HeroImageCarousel({
               <img
                 src={slide.src}
                 alt={slide.alt || 'Hero slide'}
-                className={`hero-carousel-image absolute inset-0 h-full w-full ${imageFit === 'contain' ? 'object-contain p-6' : 'object-cover'}`}
+                className="hero-carousel-image absolute inset-0 h-full w-full object-cover rounded-[1.75rem]"
               />
               {imageOverlay && imageOverlay !== 'none' && (
                 <div
-                  className="pointer-events-none absolute inset-0"
+                  className="pointer-events-none absolute inset-0 rounded-[1.75rem]"
                   style={getHeroImageOverlayStyle(imageOverlay, imageOverlayColor || bg, imageOverlayOpacity)}
                 />
               )}
