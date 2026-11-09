@@ -226,7 +226,7 @@ export default function AboutPage() {
             return (
               <div 
                 key={i} 
-                className="group relative glass rounded-2xl p-8 text-center transition-all duration-500 hover:-translate-y-1.5 overflow-hidden"
+                className="group relative glass rounded-2xl p-5 text-center transition-all duration-500 hover:-translate-y-1.5 overflow-hidden flex flex-col items-center justify-center"
               >
                 {/* Neon Border & Glow Effect on Hover */}
                 <div
@@ -243,17 +243,19 @@ export default function AboutPage() {
                   style={{ background: `radial-gradient(circle at center top, ${primary}15, transparent 70%)` }}
                 />
 
-                <div className="relative z-20">
+                <div className="relative z-20 flex items-center gap-4 sm:flex-col sm:gap-2">
                   <div 
-                    className="w-16 h-16 rounded-2xl border border-white/10 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110 shadow-md" 
+                    className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-md" 
                     style={{ background: `linear-gradient(135deg, ${primary}25, ${accent}15)` }}
                   >
-                    <Icon className="w-8 h-8" style={{ color: primary }} />
+                    <Icon className="w-6 h-6" style={{ color: primary }} />
                   </div>
-                  <div className="text-4xl font-bold text-white mb-1 tabular-nums" style={{ fontFamily: hf }}>
-                    {stat.value}+
+                  <div>
+                    <div className="text-3xl font-bold text-white mb-0.5 tabular-nums" style={{ fontFamily: hf }}>
+                      {stat.value}+
+                    </div>
+                    <div className="text-xs text-gray-400">{stat.label}</div>
                   </div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
                 </div>
               </div>
             );

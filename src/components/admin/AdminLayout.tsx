@@ -38,10 +38,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   return (
-    <div className="min-h-screen text-gray-200 flex" style={{ backgroundColor: bg }}>
+    <div className="h-screen w-screen text-gray-200 flex overflow-hidden" style={{ backgroundColor: bg }}>
       {/* Sidebar */}
       <aside
-        className={`fixed md:sticky top-0 left-0 h-screen w-64 glass border-r border-white/5 z-50 transition-transform duration-300 flex flex-col justify-between ${
+        className={`fixed md:sticky top-0 left-0 h-screen w-64 shrink-0 glass border-r border-white/5 z-50 transition-transform duration-300 flex flex-col justify-between ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
@@ -121,9 +121,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
       )}
 
-      {/* Main content */}
-      <div className="flex-1 min-w-0">
-        <header className="glass border-b border-white/5 px-6 md:px-10 py-4 flex items-center justify-between sticky top-0 z-30 shadow-lg">
+      {/* Main content wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+        <header className="glass border-b border-white/5 px-6 md:px-10 py-4 flex items-center justify-between sticky top-0 z-30 shadow-lg shrink-0">
           <div className="flex items-center gap-4">
             <button 
               className="md:hidden text-white p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors" 
@@ -149,7 +149,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </header>
 
-        <main className="p-6 md:p-10 animate-fade-up">
+        <main className="flex-1 p-6 md:p-10 animate-fade-up max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

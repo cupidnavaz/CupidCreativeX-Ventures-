@@ -119,10 +119,10 @@ export default function HomePage() {
         accent={accent}
         bg={bg}
         heroSlides={heroSlides}
-        heroImageWidth={content?.hero_image_width || 560}
-        heroImageHeight={content?.hero_image_height || 420}
-        heroImageFit={content?.hero_image_fit || 'cover'}
-        heroImageOverlay={content?.hero_image_overlay || 'gradient'}
+        heroImageWidth={content?.hero_image_width || 520}
+        heroImageHeight={content?.hero_image_height || 400}
+        heroImageFit={content?.hero_image_fit || 'contain'}
+        heroImageOverlay={content?.hero_image_overlay || 'transparent'}
         heroImageOverlayColor={content?.hero_image_overlay_color || bg}
         heroImageOverlayOpacity={content?.hero_image_overlay_opacity ?? 35}
         stats={stats}
