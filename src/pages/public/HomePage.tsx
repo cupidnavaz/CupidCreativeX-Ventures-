@@ -259,26 +259,26 @@ function Hero({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+              {/* Start Your Project Button matching navbar styling */}
               <button
                 type="button"
                 onClick={() => navigate('/contact')}
-                className="relative inline-flex items-center justify-center px-8 py-4 font-semibold bg-[#f97316] text-white rounded-xl transition-all duration-300 group shadow-lg cursor-pointer hover:bg-transparent"
+                className="group/link relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-xl glass glass-hover border border-white/10 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer shadow-lg"
                 style={{ 
-                  background: `linear-gradient(110deg, ${primary}, ${accent})`,
-                 boxShadow: '0 10px 20px -5px rgba(249, 115, 22, 0.4)'
+                  borderColor: `${primary}40`,
+                  boxShadow: `0 10px 25px -5px ${primary}30`
                 }}
               >
-                <span className="absolute inset-0 rounded-xl border-2 border-transparent group-hover:border-white/30 transition-colors duration-300 pointer-events-none" />
-                <span className="relative z-10 flex items-center gap-2">
+                <span className="text-white group-hover/link:text-white transition-colors flex items-center gap-2">
                   Start Your Project
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 group-hover/link:translate-x-1 transition-transform" style={{ color: primary }} />
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => navigate('/portfolio')}
-                className="px-8 py-4 glass glass-hover text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group hover:border-[#f97316] hover:text-[#f97316]"
+                className="px-8 py-4 glass glass-hover text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group hover:border-[#f97316] hover:text-[#f97316] cursor-pointer"
               >
                 View Our Work
                 <ArrowUpRight className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -292,7 +292,7 @@ function Hero({
               style={{ width: `min(100%, ${heroImageWidth}px)`}}
             >
               <div
-                className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-30 animate-border-rotate"
+                className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-30 animate-border-rotate pointer-events-none"
                 style={{ background: `linear-gradient(135deg, ${primary}, ${accent}, #8b5cf6, ${primary})` }}
               />
               <HeroImageCarousel
