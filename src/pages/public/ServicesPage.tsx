@@ -113,6 +113,28 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      {/* Animated Client Logo Marquee with Zoom & Glow Hover Effects (Moved directly under the banner) */}
+      <div className="marquee-track relative isolate py-6 overflow-hidden mb-12">
+        <div className="marquee-content flex gap-12 animate-marquee whitespace-nowrap items-center">
+          {[...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems].map((item, i) => (
+            <span
+              key={i}
+              className="text-sm font-medium uppercase tracking-[0.2em] text-gray-500 flex items-center gap-12 transition-all duration-300 hover:scale-90 hover:text-white cursor-pointer"
+              style={{ textShadow: 'none' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.textShadow = `0 0 15px ${primary}80, 0 0 25px ${accent}60`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.textShadow = 'none';
+              }}
+            >
+              {item}
+              <Sparkles className="w-3 h-3 transition-transform duration-300 hover:scale-125" style={{ color: primary }} />
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Text and Image Container (Text on Left, Homepage Carousel on Right) */}
       <section className="w-full px-8 md:px-12 lg:px-20 mb-20 border-t-0 border-b-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -191,33 +213,11 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Animated Client Logo Marquee with Zoom & Glow Hover Effects */}
-      <div className="marquee-track relative isolate py-6 overflow-hidden mb-20">
-        <div className="marquee-content flex gap-12 animate-marquee whitespace-nowrap items-center">
-          {[...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span
-              key={i}
-              className="text-sm font-medium uppercase tracking-[0.2em] text-gray-500 flex items-center gap-12 transition-all duration-300 hover:scale-90 hover:text-white cursor-pointer"
-              style={{ textShadow: 'none' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.textShadow = `0 0 15px ${primary}80, 0 0 25px ${accent}60`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.textShadow = 'none';
-              }}
-            >
-              {item}
-              <Sparkles className="w-3 h-3 transition-transform duration-300 hover:scale-125" style={{ color: primary }} />
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="w-full px-8 md:px-12 lg:px-20 pb-20">
         {/* Full-Width Glass Heading Container with Orange Underline */}
         <div className="w-full relative mb-16 rounded-2xl glass px-8 py-8 text-center backdrop-blur-xl border border-white/10">
           <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight pb-3 inline-block relative" style={{ fontFamily: hf }}>
-            Our Services
+            Our Core Services
             <span 
               className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full"
               style={{ 
@@ -457,7 +457,7 @@ function HeroImageCarousel({
       {slides.length > 1 && (
         <div className="absolute inset-x-4 bottom-4 z-30 flex items-center justify-between gap-3">
           <div role="group" className="flex items-center gap-1.5" aria-label="Choose featured image">
-            {slides.name?.map ? null : slides.map((slide, index) => (
+            {slides.map((slide, index) => (
               <button
                 key={slide.src}
                 type="button"
