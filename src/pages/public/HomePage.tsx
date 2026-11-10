@@ -288,7 +288,7 @@ function Hero({
           </div>
           {heroSlides.length > 0 && (
             <div
-              className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto h-full min-h-[420px]"
+              className="hero-image-shell relative mx-auto w-full min-w-0 lg:ml-auto h-full min-h-[480px]"
               style={{ width: `min(100%, ${heroImageWidth}px)`}}
             >
               <div
