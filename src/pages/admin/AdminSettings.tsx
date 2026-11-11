@@ -79,7 +79,7 @@ export default function AdminSettings() {
 
       <form onSubmit={handleSave} className="space-y-6 max-w-3xl">
         {/* Branding & Appearance */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <div className="flex items-center gap-2 mb-4">
             <Palette className="w-5 h-5" style={{ color: primary }} />
             <h3 className="text-lg font-bold text-white" style={{ fontFamily: hf }}>Branding & Appearance</h3>
@@ -89,8 +89,8 @@ export default function AdminSettings() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1 flex items-center gap-1"><Image className="w-3 h-3" /> Logo Image URL</label>
-              <input type="url" value={settings.logo_url} onChange={(e) => update('logo_url', e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" placeholder="Leave empty to use icon logo" />
-              <p className="text-xs text-gray-600 mt-1">Upload your logo image and paste the URL here. If empty, the icon below is used.</p>
+              <input type="url" value={settings.logo_url || ''} onChange={(e) => update('logo_url', e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" placeholder="Leave empty to use icon logo" />
+              <p className="text-xs text-gray-500 mt-1">Upload your logo image and paste the URL here. If empty, the icon below is used.</p>
             </div>
 
             <div>
@@ -117,14 +117,14 @@ export default function AdminSettings() {
             {/* Logo Preview */}
             <div>
               <label className="block text-sm text-gray-400 mb-2">Preview</label>
-              <div className="glass rounded-lg p-4 flex items-center gap-3">
+              <div className="glass rounded-lg p-4 flex items-center gap-3 border border-white/10">
                 {settings.logo_url ? (
                   <img src={settings.logo_url} alt="Logo" className="w-10 h-10 rounded-xl object-contain" />
                 ) : (
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md" style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}>
                     {(() => {
                       const IconComp = (Icons as unknown as Record<string, Icons.LucideIcon>)[settings.logo_icon || 'Heart'] || Icons.Heart;
-                      return <IconComp className="w-5 h-5 text-white" fill="white" />;
+                      return <IconComp className="w-5 h-5 text-white" />;
                     })()}
                   </div>
                 )}
@@ -161,28 +161,28 @@ export default function AdminSettings() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div>
                 <label className="block text-sm text-gray-400 mb-1 flex items-center gap-1"><Type className="w-3 h-3" /> Heading Font</label>
-                <select value={settings.font_heading} onChange={(e) => update('font_heading', e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
+                <select value={settings.font_heading} onChange={(e) => update('font_heading', e.target.value)} className="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
                   {FONT_OPTIONS.map((f) => <option key={f} value={f} style={{ fontFamily: `'${f}', sans-serif`, background: '#1a1a2e' }}>{f}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-1 flex items-center gap-1"><Type className="w-3 h-3" /> Body Font</label>
-                <select value={settings.font_body} onChange={(e) => update('font_body', e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
+                <select value={settings.font_body} onChange={(e) => update('font_body', e.target.value)} className="w-full px-4 py-2.5 bg-gray-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50">
                   {FONT_OPTIONS.map((f) => <option key={f} value={f} style={{ fontFamily: `'${f}', sans-serif`, background: '#1a1a2e' }}>{f}</option>)}
                 </select>
               </div>
             </div>
 
             {/* Font Preview */}
-            <div className="glass rounded-lg p-4">
-              <div className="text-2xl font-bold text-white mb-1" style={{ fontFamily: `'${settings.font_heading}', sans-serif` }}>Heading Preview — {settings.font_heading}</div>
+            <div className="glass rounded-lg p-4 border border-white/10">
+              <div className="text-xl font-bold text-white mb-1" style={{ fontFamily: `'${settings.font_heading}', sans-serif` }}>Heading Preview — {settings.font_heading}</div>
               <div className="text-sm text-gray-400" style={{ fontFamily: `'${settings.font_body}', sans-serif` }}>Body text preview in {settings.font_body}. The quick brown fox jumps over the lazy dog.</div>
             </div>
           </div>
         </div>
 
         {/* Hero Section */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4" style={{ fontFamily: hf }}>Hero Section</h3>
           <div className="space-y-4">
             <div>
@@ -201,7 +201,7 @@ export default function AdminSettings() {
         </div>
 
         {/* About Section */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4" style={{ fontFamily: hf }}>About Section</h3>
           <div className="space-y-4">
             <div>
@@ -220,7 +220,7 @@ export default function AdminSettings() {
         </div>
 
         {/* Contact Info */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4" style={{ fontFamily: hf }}>Contact Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -239,9 +239,9 @@ export default function AdminSettings() {
         </div>
 
         {/* Social Links */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4" style={{ fontFamily: hf }}>Social Links</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-400 mb-1">Twitter</label>
               <input type="url" value={settings.twitter_url} onChange={(e) => update('twitter_url', e.target.value)} className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50" />
@@ -262,7 +262,7 @@ export default function AdminSettings() {
         </div>
 
         {/* Stats */}
-        <div className="glass rounded-xl p-6">
+        <div className="glass rounded-xl p-6 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4" style={{ fontFamily: hf }}>Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
@@ -284,12 +284,12 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button type="submit" disabled={saving} className="px-6 py-3 text-white font-semibold rounded-lg flex items-center gap-2 disabled:opacity-50 transition-all" style={{ background: `linear-gradient(to right, ${primary}, ${primary}dd)` }}>
+        <div className="flex items-center gap-4 pt-2">
+          <button type="submit" disabled={saving} className="px-6 py-3 text-white font-semibold rounded-lg flex items-center gap-2 disabled:opacity-50 transition-all shadow-lg shadow-orange-500/20 hover:brightness-110" style={{ background: `linear-gradient(to right, ${primary}, ${primary}dd)` }}>
             {saving ? 'Saving...' : <><Save className="w-4 h-4" /> Save Settings</>}
           </button>
           {saved && (
-            <span className="text-green-400 text-sm flex items-center gap-1">
+            <span className="text-green-400 text-sm flex items-center gap-1 font-medium">
               <Check className="w-4 h-4" /> Saved successfully
             </span>
           )}

@@ -21,7 +21,7 @@ export function Logo({ size = 'md', showText = true }: { size?: 'sm' | 'md' | 'l
   const IconComp = (Icons as unknown as Record<string, Icons.LucideIcon>)[logoIcon] || Icons.Heart;
 
   return (
-    <div className="brand-lockup flex items-center gap-2">
+    <div className="brand-lockup flex items-center gap-2.5">
       {logoUrl ? (
         <img
           src={logoUrl}
@@ -31,10 +31,10 @@ export function Logo({ size = 'md', showText = true }: { size?: 'sm' | 'md' | 'l
         />
       ) : (
         <div
-          className={`brand-logo-mark ${s.box} rounded-xl flex items-center justify-center flex-shrink-0`}
+          className={`brand-logo-mark ${s.box} rounded-xl flex items-center justify-center flex-shrink-0 shadow-md`}
           style={{ background: `linear-gradient(135deg, ${primary}, ${accent})` }}
         >
-          <IconComp className={`${s.icon} text-white`} fill="white" />
+          <IconComp className={`${s.icon} text-white`} />
         </div>
       )}
       {showText && (
