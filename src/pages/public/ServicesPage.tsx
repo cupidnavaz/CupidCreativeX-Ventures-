@@ -105,7 +105,7 @@ export default function ServicesPage() {
                   </span>
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                  {content?.subtitle || 'We offer a full spectrum of digital services to help your business thrive in the modern landscape.'}
+                  {content?.hero_subtitle || 'We offer a full spectrum of digital services to help your business thrive in the modern landscape.'}
                 </p>
               </div>
             </div>

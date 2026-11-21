@@ -2,12 +2,19 @@ import { useTheme } from '../lib/theme';
 import { usePageContent } from '../lib/pageContent';
 import { getHeroImageOverlayStyle } from '../lib/heroImage';
 
+interface PageHeroProps {
+  pageKey: string;
+  defaultTitle: string;
+  defaultSubtitle?: string;
+  gradientWord?: string;
+}
+
 export function PageHero({
   pageKey,
   defaultTitle,
   defaultSubtitle,
   gradientWord,
-}) {
+}: PageHeroProps) {
   const { settings } = useTheme();
   const { content, loading } = usePageContent(pageKey);
 
@@ -36,7 +43,7 @@ export function PageHero({
       return title;
     }
     const parts = titlePart.split(/__GRADIENT__(.*?)__END__/);
-    return parts.map((part, i) => {
+    return parts.map((part: string, i: number) => {
       if (i % 2 === 1) {
         return (
           <span

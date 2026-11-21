@@ -1,3 +1,4 @@
+﻿import SupportAgent from '@/components/support/SupportAgent';
 import { AuthProvider } from '@/lib/auth';
 import { RouterProvider, useRouter } from '@/lib/router';
 import { ThemeProvider } from '@/lib/theme';
@@ -28,8 +29,6 @@ import AdminPages from '@/pages/admin/AdminPages';
 import AdminIntegrations from '@/pages/admin/AdminIntegrations';
 import AdminPlugins from '@/pages/admin/AdminPlugins';
 import AdminSocial from '@/pages/admin/AdminSocial';
-import { Bubble } from '@typebot.io/react';
-
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const { navigate } = useRouter();
@@ -119,11 +118,7 @@ export default function App() {
       <AuthProvider>
         <RouterProvider>
           <Routes />
-          {/* Customer Support Typebot Bubble Widget */}
-          <Bubble
-            typebot="cupidcreativex"
-            apiHost="https://typebot.io"
-          />
+          <SupportAgent />
         </RouterProvider>
       </AuthProvider>
     </ThemeProvider>

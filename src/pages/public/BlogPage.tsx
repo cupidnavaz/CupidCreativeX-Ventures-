@@ -114,7 +114,7 @@ export default function BlogPage() {
                   </span>
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                  {content?.subtitle || 'Actionable strategies, engineering frameworks, and design playbooks for ambitious brands.'}
+                  {content?.hero_subtitle || 'Actionable strategies, engineering frameworks, and design playbooks for ambitious brands.'}
                 </p>
               </div>
             </div>

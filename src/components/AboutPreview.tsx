@@ -1,6 +1,7 @@
-﻿import React, { useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Target, Eye, Heart, ArrowRight } from 'lucide-react';
+import { useReveal } from '../lib/useReveal';
 
 interface ParallaxImageProps {
   src: string;

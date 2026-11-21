@@ -135,7 +135,7 @@ export default function ContactPage() {
                   </span>
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                  {content?.subtitle || "Have a project in mind? We'd love to hear about it. Reach out and let's create something extraordinary together."}
+                  {content?.hero_subtitle || "Have a project in mind? We'd love to hear about it. Reach out and let's create something extraordinary together."}
                 </p>
               </div>
             </div>

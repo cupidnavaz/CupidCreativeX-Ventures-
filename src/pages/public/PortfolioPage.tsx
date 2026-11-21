@@ -86,7 +86,7 @@ export default function PortfolioPage() {
                   </span>
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                  {content?.subtitle || "Explore some of the projects we've crafted for clients across industries."}
+                  {content?.hero_subtitle || "Explore some of the projects we've crafted for clients across industries."}
                 </p>
               </div>
             </div>

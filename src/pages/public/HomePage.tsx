@@ -122,7 +122,7 @@ export default function HomePage() {
         heroImageWidth={content?.hero_image_width || 520}
         heroImageHeight={content?.hero_image_height || 400}
         heroImageFit={content?.hero_image_fit || 'contain'}
-        heroImageOverlay={content?.hero_image_overlay || 'transparent'}
+        heroImageOverlay={content?.hero_image_overlay || 'none'}
         heroImageOverlayColor={content?.hero_image_overlay_color || bg}
         heroImageOverlayOpacity={content?.hero_image_overlay_opacity ?? 35}
         stats={stats}

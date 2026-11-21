@@ -79,7 +79,7 @@ export default function TeamPage() {
                   </span>
                 </h1>
                 <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                  {content?.subtitle || `Meet the talented people behind [CupidCreativeX Ventures](https://www.instagram.com/cupidcreativex/).`}
+                  {content?.hero_subtitle || `Meet the talented people behind [CupidCreativeX Ventures](https://www.instagram.com/cupidcreativex/).`}
                 </p>
               </div>
             </div>
